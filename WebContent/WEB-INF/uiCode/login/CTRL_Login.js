@@ -34,9 +34,12 @@ APP.CONTROLLERS.controller ('CTRL_Login',['$scope','$state','$http','$ionicLoadi
 		}
 	}
 	theCtrl.signIN = function(){
+		$scope.$emit('showBusy');
+		
 		if (theCtrl.validate()){
 			$http.post('/ws/login/',$scope.login , config)
 	  		.then(function(response){
+	  			$scope.$emit('hideBusy');
 	  			if (response.data.emailOTP && response.data.emailOTP.length > 5){
 	  				window.localStorage.setItem('clientEmail',response.data.clientEmail ) ;
 		  			window.localStorage.setItem('emailOTP',response.data.emailOTP ) ;
@@ -45,15 +48,22 @@ APP.CONTROLLERS.controller ('CTRL_Login',['$scope','$state','$http','$ionicLoadi
 	  			
 	  		
 	  		},
-			function(response){	}
+			function(response){	
+	  			$scope.$emit('hideBusy');
+	  		}
 	  		);	
+		}else {
+			$scope.$emit('hideBusy');
+			
 		}
 		
 		   
 	}
 	theCtrl.proceedsToHome = function(){
+		$scope.$emit('showBusy');
 		$http.get(appData.getHost()+'/ws/login/isUserVerified/'+window.localStorage.getItem('emailOTP'))
   		.then(function(response){
+  			$scope.$emit('hideBusy');
   			if (response.data && response.data.verified){
   				 window.localStorage.setItem('userValidated',"true");
   				$state.transitionTo('menu.tab.home');
@@ -63,7 +73,7 @@ APP.CONTROLLERS.controller ('CTRL_Login',['$scope','$state','$http','$ionicLoadi
   			
   		},
 		function(response){
-  			 
+  			$scope.$emit('hideBusy');
   			
 		});
 		

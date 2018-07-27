@@ -87,10 +87,7 @@ public class LoginFacade {
 		String emailOtpStr = MangoDB.getDocumentWithQuery("ppm","email-verification", otp, null, true, MangoDB.mlabKeySonu, null);
 		Gson  json = new Gson();
 		EmailOTP emailOtp = json.fromJson(emailOtpStr, new TypeToken<EmailOTP>() {}.getType());
-		emailOtp.setVerified(true);
 		
-		emailOtpStr = json.toJson(emailOtp, new TypeToken<EmailOTP>() {}.getType());
-		MangoDB.updateData("ppm","email-verification",emailOtpStr, emailOtp.get_id(),  MangoDB.mlabKeySonu);
 		return emailOtp;
 		
 	}

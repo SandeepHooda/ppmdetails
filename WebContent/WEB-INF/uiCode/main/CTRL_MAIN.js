@@ -28,4 +28,28 @@ APP.CONTROLLERS.controller ('CTRL_MAIN',['$scope','$state','$rootScope','$ionicL
 		 }
 	 }	
 	 $scope.checkAuthontication();
+	 
+		//Busy icon
+	 $rootScope.$on('showBusy',function(event){
+			$scope.gettingUserReminderList = true;
+		    $ionicLoading.show({
+			      template: 'Please Wait...',
+			      duration: 10000
+			    }).then(function(){
+			       console.log("The loading indicator is now displayed");
+			    });
+			
+		});
+	 
+
+	 $rootScope.$on('hideBusy',function(event){
+		 $scope.gettingUserReminderList = false;
+		    $ionicLoading.hide().then(function(){
+		       console.log("The loading indicator is now hidden");
+		    });
+			
+		});
+	
+	 
+		 
 }])
