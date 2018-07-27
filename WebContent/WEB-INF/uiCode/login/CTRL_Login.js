@@ -1,8 +1,7 @@
 APP.CONTROLLERS.controller ('CTRL_Login',['$scope','$state','$http','$ionicLoading','appData','$ionicPopup','$ionicSideMenuDelegate',
     function($scope,$state,$http,$ionicLoading,appData,$ionicPopup,$ionicSideMenuDelegate){
 	var theCtrl = this;
-	$scope.host = appData.getHost();
-	$scope.conditionAgree = false;
+	$scope.login = {};
 	 var config = {
 	            headers : {
 	                'Content-Type': 'application/json;'

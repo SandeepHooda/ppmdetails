@@ -4,6 +4,9 @@
     </ion-header-bar>
  <ion-content class="padding">
  
-	
+	<input class="loginFields" type="text" placeholder="workEmail@domain.com" ng-model="login.workEmail" />
+	<input class="loginFields" type="text" placeholder="infyEmail@infosys.com" ng-model="login.infyEmail" />
+	<input class="loginFields" type="text" placeholder="managerInfyEmail@infosys.com" ng-model="login.managerInfyEmail" />
+	 <button ng-click="$ctrl.signIN()" id="signin" name="signin"  class="button button-positive order-button fullBtn">Login</button>
  </ion-content>
 </ion-view>

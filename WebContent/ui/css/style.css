@@ -276,12 +276,10 @@ display: block;
 	height: 50px;
 	width:650px;
 }
-.cash {
-	
-	background:white;
+.loginFields {
 	width:100%;
 }
-.cashBtn {
+.fullBtn {
 	display:block;
 	width:100%;
 }
@@ -630,7 +628,7 @@ input{
 	border:1px solid #888888;
 	margin:6px;
 	width:100px;
-	background-color: #6699ff;
+	background-color: wheat;
 	color:white;
 }
 div.width90 {width: 92%;}

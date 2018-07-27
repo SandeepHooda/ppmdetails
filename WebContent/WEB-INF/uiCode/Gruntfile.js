@@ -29,7 +29,7 @@ module.exports = function (grunt) {
 					separator:';'
 				},
 				js:{
-					src:[ '<%= js_src_path %>/js/app.js', '<%= js_src_path %>/home/**/*.js','<%= js_src_path %>/myprofile/**/*.js','<%= js_src_path %>/login/**/*.js',
+					src:[ '<%= js_src_path %>/js/app.js', '<%= js_src_path %>/home/**/*.js','<%= js_src_path %>/main/**/*.js','<%= js_src_path %>/myprofile/**/*.js','<%= js_src_path %>/login/**/*.js',
 						'<%= js_src_path %>/util/**/*.js','<%= js_src_path %>/history/**/*.js' ],
 					dest:'<%= js_build_path %>/js/prod-debug<%= curretDate %>.js'
 				}
