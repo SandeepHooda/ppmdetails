@@ -7,13 +7,20 @@ APP.CONTROLLERS.controller ('CTRL_MAIN',['$scope','$state','$rootScope','$ionicL
 	        }
 	 dataLayer.push({'pageTitle': 'Home'});    // Better
 	 $scope.isUserValidated = function(){
-		 
+		var userValidated = window.localStorage.getItem('userValidated');
+		if (userValidated && userValidated.length > 1){
+			return true;
+		}else {
+			return false;
+		}
 	 }
 	 $scope.checkAuthontication = function(){
-		 var workEmail = window.localStorage.getItem('workEmail');
-		 if (workEmail && workEmail.length > 5){
+		 var clientEmail = window.localStorage.getItem('clientEmail');
+		 if (clientEmail && clientEmail.length > 5){
 			 if ($scope.isUserValidated()){
 				 $state.transitionTo('menu.tab.home');
+			 }else {
+				 $state.transitionTo('menu.verifyEmail');
 			 }
 		 }else {
 			 

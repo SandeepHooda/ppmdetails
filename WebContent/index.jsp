@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>My Shop</title>
+<title>Time Sheet details</title>
 </head>
 <body>
 <c:redirect url = "/ui/index.html"/>

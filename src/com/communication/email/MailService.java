@@ -43,7 +43,7 @@ import com.google.gson.reflect.TypeToken;
 
 public class MailService {
 	private static final Logger log = Logger.getLogger(MailService.class.getName());
-	
+	public static final String key = "jkaamdweeagveabn";
 	private static FetchOptions lFetchOptions = FetchOptions.Builder.doNotValidateCertificate().setDeadline(300d);
 	private static URLFetchService fetcher = URLFetchServiceFactory.getURLFetchService();
 	

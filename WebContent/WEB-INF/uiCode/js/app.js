@@ -57,6 +57,10 @@ angular.module('starter', APP.DEPENDENCIES.concat(APP.OTHERDEPENDENCIES))
 					url:'/login',
 					templateUrl: 'login/login.html',
 					controller: 'CTRL_Login'
+				}).state('menu.verifyEmail',{
+					url:'/verifyEmail',
+					templateUrl: 'login/verifyEmail.html',
+					controller: 'CTRL_Login'
 				})
 				$urlRouterProvider.otherwise('/menu/tab/home');
 			}

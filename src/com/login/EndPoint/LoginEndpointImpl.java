@@ -17,10 +17,10 @@ public class LoginEndpointImpl implements LoginEndpoint {
 	}
 
 	@Override
-	public Response login( HttpServletRequest request) {
+	public Response login(LoginVO loginVO, HttpServletRequest request) {
 		try{
 			
-			return Response.ok().entity("").build();
+			return Response.ok().entity(loginFacade.login(loginVO)).build();
 		}catch(Exception e){
 			e.printStackTrace();
 			LoginVO vo = new LoginVO();
@@ -29,6 +29,34 @@ public class LoginEndpointImpl implements LoginEndpoint {
 			return Response.serverError().entity(vo).build();
 		}
 	}
+	
+	@Override
+	public Response validateOtp(String otp) {
+		try{
+			
+			return Response.ok().entity(loginFacade.validateOtp(otp)).build();
+		}catch(Exception e){
+			e.printStackTrace();
+			LoginVO vo = new LoginVO();
+			vo.setErrorMessage("Internal Server Error ");
+			
+			return Response.serverError().entity(vo).build();
+		}
+	}
+	@Override
+	public Response isUserVerified(String otp) {
+		try{
+			
+			return Response.ok().entity(loginFacade.isUserVerified(otp)).build();
+		}catch(Exception e){
+			e.printStackTrace();
+			LoginVO vo = new LoginVO();
+			vo.setErrorMessage("Internal Server Error ");
+			
+			return Response.serverError().entity(vo).build();
+		}
+	}
+	
 	
 
 }

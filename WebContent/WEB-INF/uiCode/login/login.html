@@ -3,10 +3,12 @@
       <h1 class="title">Login</h1>
     </ion-header-bar>
  <ion-content class="padding">
- 
-	<input class="loginFields" type="text" placeholder="workEmail@domain.com" ng-model="login.workEmail" />
-	<input class="loginFields" type="text" placeholder="infyEmail@infosys.com" ng-model="login.infyEmail" />
-	<input class="loginFields" type="text" placeholder="managerInfyEmail@infosys.com" ng-model="login.managerInfyEmail" />
-	 <button ng-click="$ctrl.signIN()" id="signin" name="signin"  class="button button-positive order-button fullBtn">Login</button>
+ <br/><br/>
+ 	<span style="color: red;">{{validationError}}</span>
+	<input class="loginFields" type="text" placeholder="clientEmail@clientDomain.com" ng-model="login.clientEmail" />
+	<input class="loginFields" type="text" placeholder="corporate@corporateDomain.com" ng-model="login.infyEmail" />
+	<input class="loginFields" type="text" placeholder="managerEmail@corporateDomain.com" ng-model="login.managerInfyEmail" />
+	<br/><br/>
+	 <button ng-click="$ctrl.signIN()" id="signin" name="signin"  class="button button-balanced order-button fullBtn">Login</button>
  </ion-content>
 </ion-view>

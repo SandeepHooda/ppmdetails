@@ -21,7 +21,7 @@ import com.google.appengine.api.urlfetch.URLFetchServiceFactory;
 
 
 public class MangoDB {
-	public static final String mlabKeyReminder = "oEEHExhtLS3QShn3Y2Kl4_a4nampQKj9";
+	public static final String mlabKeySonu = "soblgT7uxiAE6RsBOGwI9ZuLmcCgcvh_";
 	public static final String noCollection = "";
 	private static final Logger log = Logger.getLogger(MangoDB.class.getName());
 	private static FetchOptions lFetchOptions = FetchOptions.Builder.doNotValidateCertificate().setDeadline(300d);
@@ -70,7 +70,7 @@ public class MangoDB {
 	
 	public static String getDocumentWithQuery(String dbName, String collection,  String documentKey, String keyName, boolean isKeyString, String mlabApiKey, String query){
 		if (null == mlabApiKey) {
-			mlabApiKey = mlabKeyReminder;
+			mlabApiKey = mlabKeySonu;
 		}
 		String httpsURL  = "https://api.mlab.com/api/1/databases/"+dbName+"/collections/"+collection+"?apiKey="+mlabApiKey;
 		if (null != documentKey){
@@ -120,7 +120,7 @@ public class MangoDB {
 	}
 	public static String getData(String db, String collection,  String apiKey ){
 		if (null == apiKey) {
-			apiKey = mlabKeyReminder;
+			apiKey = mlabKeySonu;
 		}
 		db = db.toLowerCase();
 		return getADocument(db,collection,null,null,apiKey);
@@ -130,7 +130,7 @@ public class MangoDB {
 	//Create 
 public static void createNewDocumentInCollection(String dbName,String collection,  String data, String key){
 	if (null == key) {
-		key = mlabKeyReminder;
+		key = mlabKeySonu;
 	}
 		String httpsURL = "https://api.mlab.com/api/1/databases/"+dbName+"/collections/"+collection+"?apiKey="+key;
 		
@@ -153,7 +153,7 @@ public static void createNewDocumentInCollection(String dbName,String collection
 	
 public static void updateData(String dbName,String collection, String data, String documentKey,  String apiKey){
 	if (null == apiKey) {
-		apiKey = mlabKeyReminder;
+		apiKey = mlabKeySonu;
 	}
 	String httpsURL = "https://api.mlab.com/api/1/databases/"+dbName+"/collections/"+collection+"?apiKey="+apiKey;
 	if (null != documentKey){
@@ -188,7 +188,7 @@ public static void updateData(String dbName,String collection, String data, Stri
 	
 public static void deleteDocument(String dbName,String collection,  String dataKeyTobeDeleted, String key){
 	if (null == key) {
-		key = mlabKeyReminder;
+		key = mlabKeySonu;
 	}
 		
 		String httpsURL = "https://api.mlab.com/api/1/databases/"+dbName+"/collections/"+collection+"/"+dataKeyTobeDeleted+"?apiKey="+key;
