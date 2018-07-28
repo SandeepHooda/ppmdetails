@@ -13,10 +13,30 @@ APP.DEPENDENCIES = ['allControllers',
                     'allDirective',
                     'allFact'
                     ];
-APP.OTHERDEPENDENCIES = ['ionic','ngCordova','ionic-numberpicker'];
+APP.OTHERDEPENDENCIES = ['ionic','ngCordova','ionic-numberpicker', 'ionic-datepicker'];
 angular.module('starter', APP.DEPENDENCIES.concat(APP.OTHERDEPENDENCIES))
-.config(['$urlRouterProvider','$stateProvider','$ionicConfigProvider',
-         function($urlRouterProvider,$stateProvider,$ionicConfigProvider){
+.config(['$urlRouterProvider','$stateProvider','$ionicConfigProvider','ionicDatePickerProvider',
+         function($urlRouterProvider,$stateProvider,$ionicConfigProvider, ionicDatePickerProvider){
+	
+	var datePickerObj = {
+		      inputDate: new Date(),
+		      titleLabel: 'Select a Date',
+		      setLabel: 'Set',
+		      todayLabel: 'Today',
+		      closeLabel: 'Close',
+		      mondayFirst: false,
+		      weeksList: ["S", "M", "T", "W", "T", "F", "S"],
+		      monthsList: ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"],
+		      templateType: 'popup',
+		      from: new Date(2017, 8, 1),
+		      to: new Date(2098, 8, 1),
+		      showTodayButton: false,
+		      dateFormat: 'dd MMMM yyyy',
+		      closeOnSelect: true,
+		      disableWeekdays: []
+		    };
+		    ionicDatePickerProvider.configDatePicker(datePickerObj);
+		    
 	$ionicConfigProvider.tabs.position('bottom');
 	 // setup an abstract state for the tabs directive
 				$stateProvider.state('menu',{
@@ -53,6 +73,10 @@ angular.module('starter', APP.DEPENDENCIES.concat(APP.OTHERDEPENDENCIES))
 					url:'/myprofile',
 					templateUrl: 'myprofile/myprofile.html',
 					controller: 'CTRL_Myprofile'
+				}).state('menu.reporting',{
+					url:'/reporting',
+					templateUrl: 'reporting/reporting.html',
+					controller: 'CTRL_Reporting'
 				}).state('menu.login',{
 					url:'/login',
 					templateUrl: 'login/login.html',

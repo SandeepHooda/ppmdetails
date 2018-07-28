@@ -2,6 +2,8 @@ package com.login.facade;
 
 
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -34,17 +36,24 @@ public class LoginFacade {
 		return loginVO;
 	}
 	public void isUserManager(LoginVO loginVO) {
-		String allUsersJson = "[" +MangoDB.getDocumentWithQuery("ppm","registered-users", null, null, false, MangoDB.mlabKeySonu, null) +"]";
+		String reeporteeQuery = "{\"managerInfyEmail\":\""+loginVO.getInfyEmail()+"\"}";
+		try {
+			reeporteeQuery =URLEncoder.encode(reeporteeQuery, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			
+			e.printStackTrace();
+		}
+		reeporteeQuery = "&q="+reeporteeQuery;
+		String reporteeJson = "["+MangoDB.getDocumentWithQuery("ppm","registered-users", null, null, false, MangoDB.mlabKeySonu, reeporteeQuery)+"]" ;
 		Gson  json = new Gson();
-		List<LoginVO> allUsers= json.fromJson(allUsersJson, new TypeToken<List<LoginVO>>() {}.getType());
+		List<LoginVO> reporteeList= json.fromJson(reporteeJson, new TypeToken<List<LoginVO>>() {}.getType());
 		Set<String> reportees = new HashSet<String>();
-		if (allUsers != null) {
-			for (LoginVO aUser : allUsers) {
-				if (aUser.getManagerInfyEmail().equalsIgnoreCase(loginVO.getInfyEmail())) {
-					reportees.add(aUser.getClientEmail());
-				}
+		if (null != reporteeList && reporteeList.indexOf("null") <0) {
+			for (LoginVO aReportee: reporteeList) {
+				reportees.add(aReportee.get_id());
 			}
 		}
+		
 		if (reportees.size() > 0) {
 			loginVO.setManager(true);
 		}else {
