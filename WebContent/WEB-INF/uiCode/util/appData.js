@@ -1,15 +1,11 @@
 APP.SERVICES.service ('appData',['$window','dataRestore','$ionicPopup',
     function( $window,dataRestore, $ionicPopup){
-	this.cartItems = [];
-	this.offerItems = [];
-	this.getShopID = function () {
-		return "1519981368108";
-	}
+	
 	this.getHost = function () {
-		var host = "http://www.idonotremember.com";
+		var host = "https://ppmdetails.appspot.com";
 		if ($window.location.host == ""){
 			host = "phone";
-			//host = "https://deliveratmydoor.appspot.com";
+			
 		}else if ($window.location.host.indexOf("localhost:8080") >=0 ){
 			host = "";
 		}
@@ -36,15 +32,6 @@ APP.SERVICES.service ('appData',['$window','dataRestore','$ionicPopup',
 		}
 	}
 	
-	this.getOfferItems = function(){
-		return this.offerItems;
-	}
-	this.setOfferItems = function(offerItems){
-		this.offerItems = offerItems;
-	}
-	this.getCartItems = function(){
-		return this.cartItems;
-	}
 	
 	
 }

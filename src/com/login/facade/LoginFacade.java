@@ -24,15 +24,11 @@ public class LoginFacade {
 		
 		Gson  json = new Gson();
 		String loginVOJson = json.toJson(loginVO, new TypeToken<LoginVO>() {}.getType());
-		String isUserPresent = MangoDB.getDocumentWithQuery("ppm","registered-users", loginVO.getClientEmail(), null, true, MangoDB.mlabKeySonu, null);
-		if (isUserPresent != null && isUserPresent.indexOf(loginVO.getClientEmail()) > 0) {
-			
-		}else {
-			MangoDB.createNewDocumentInCollection("ppm","registered-users",  loginVOJson, MangoDB.mlabKeySonu);
-		}
-		;
+		//This is set inactive flag to false
+		MangoDB.createNewDocumentInCollection("ppm","registered-users",  loginVOJson, MangoDB.mlabKeySonu);
+		
 		loginVO.setEmailOTP(sendVerificationEmail( loginVO));
-		System.out.println(loginVO.getEmailOTP());
+		
 		return loginVO;
 	}
 	private String sendVerificationEmail(LoginVO loginVO) {

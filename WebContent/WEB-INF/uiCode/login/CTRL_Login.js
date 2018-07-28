@@ -37,7 +37,7 @@ APP.CONTROLLERS.controller ('CTRL_Login',['$scope','$state','$http','$ionicLoadi
 		$scope.$emit('showBusy');
 		
 		if (theCtrl.validate()){
-			$http.post('/ws/login/',$scope.login , config)
+			$http.post(appData.getHost()+'/ws/login/',$scope.login , config)
 	  		.then(function(response){
 	  			$scope.$emit('hideBusy');
 	  			if (response.data.emailOTP && response.data.emailOTP.length > 5){

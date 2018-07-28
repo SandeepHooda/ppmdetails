@@ -1,9 +1,17 @@
-<ion-view title="My Profile"  class="white" ng-controller="CTRL_Login as $ctrl" cache-view="false">
+<ion-view title="My Profile"  class="white" ng-controller="CTRL_Myprofile as $ctrl" cache-view="false" ng-init="getMyProfile();">
 <ion-header-bar class="bar-positive">
       <h1 class="title">My Profile</h1>
     </ion-header-bar>
  <ion-content class="padding">
- My Profile
-	
+ <br/><br/>
+ 	<span style="color: red;">{{validationError}}</span>
+ 	
+	<input class="loginFields" disabled type="text" placeholder="clientEmail@clientDomain.com" ng-model="login.clientEmail" />
+	<input class="loginFields" disabled type="text" placeholder="corporate@corporateDomain.com" ng-model="login.infyEmail" />
+	<input class="loginFields" type="text" placeholder="managerEmail@corporateDomain.com" ng-model="login.managerInfyEmail" />
+	<br/><br/>
+	 <button ng-click="$ctrl.updateProfile()" id="signin" name="signin"  class="button button-balanced order-button fullBtn">Change Manager</button>
+	 <br/><br/>
+	 <button ng-click="$ctrl.deleteProfile()" id="signin" name="signin"  class="button button-balanced order-button fullBtn">Delete my profile</button>
  </ion-content>
 </ion-view>

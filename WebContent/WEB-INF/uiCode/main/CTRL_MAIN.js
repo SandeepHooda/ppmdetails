@@ -14,11 +14,37 @@ APP.CONTROLLERS.controller ('CTRL_MAIN',['$scope','$state','$rootScope','$ionicL
 			return false;
 		}
 	 }
+	 $scope.isUserStillActiveInDB = function(){
+		
+		 
+		 $scope.$emit('showBusy');
+			$http.get(appData.getHost()+'/ws/myprofile/'+window.localStorage.getItem('clientEmail'))
+	  		.then(function(response){
+	  			$scope.$emit('hideBusy');
+	  			if (response.data ){
+	  				$scope.login = response.data;
+	  				if(!$scope.login.clientEmail || $scope.login.inactive){
+	  					 window.localStorage.removeItem("clientEmail");
+	 		  			window.localStorage.removeItem("userValidated");
+	  					$state.transitionTo('menu.login');
+	  				}else {
+	  					 $state.transitionTo('menu.tab.home');
+	  				}
+	  				 
+	  			}
+	  			
+	  		},
+			function(response){
+	  			$scope.$emit('hideBusy');
+	  			
+			});
+	}
 	 $scope.checkAuthontication = function(){
 		 var clientEmail = window.localStorage.getItem('clientEmail');
 		 if (clientEmail && clientEmail.length > 5){
 			 if ($scope.isUserValidated()){
-				 $state.transitionTo('menu.tab.home');
+				 $scope.isUserStillActiveInDB();
+				 
 			 }else {
 				 $state.transitionTo('menu.verifyEmail');
 			 }

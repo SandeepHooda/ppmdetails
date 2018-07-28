@@ -5,9 +5,12 @@ public class LoginVO {
 	private String _id;
 	private String errorMessage;
 	private String clientEmail;
+	
 	private String infyEmail;
 	private String managerInfyEmail;
 	private String emailOTP;
+	private boolean manager;
+	private boolean inactive;
 
 	public String getErrorMessage() {
 		return errorMessage;
@@ -22,6 +25,7 @@ public class LoginVO {
 	}
 
 	public void setClientEmail(String clientEmail) {
+		clientEmail = clientEmail.toLowerCase();
 		this._id = clientEmail;
 		this.clientEmail = clientEmail;
 	}
@@ -31,6 +35,7 @@ public class LoginVO {
 	}
 
 	public void setInfyEmail(String infyEmail) {
+		infyEmail = infyEmail.toLowerCase();
 		this.infyEmail = infyEmail;
 	}
 
@@ -39,6 +44,7 @@ public class LoginVO {
 	}
 
 	public void setManagerInfyEmail(String managerInfyEmail) {
+		managerInfyEmail = managerInfyEmail.toLowerCase();
 		this.managerInfyEmail = managerInfyEmail;
 	}
 
@@ -57,6 +63,24 @@ public class LoginVO {
 	public void setEmailOTP(String emailOTP) {
 		this.emailOTP = emailOTP;
 	}
+
+	public boolean isManager() {
+		return manager;
+	}
+
+	public void setManager(boolean manager) {
+		this.manager = manager;
+	}
+
+	public boolean isInactive() {
+		return inactive;
+	}
+
+	public void setInactive(boolean inactive) {
+		this.inactive = inactive;
+	}
+
+	
 
 	
 	
