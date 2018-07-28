@@ -69,8 +69,8 @@ APP.CONTROLLERS.controller ('CTRL_Reporting',['$scope','$state','$http','$ionicL
 	};
 	  
 	$scope.download = function(){
-		$scope.$emit('showBusy');
-		window.open(appData.getHost()+'/TimeSheetReport?id='+window.localStorage.getItem('clientEmail')+"&from="+$scope.fromDate +"&to"+$scope.toDate );
+		
+		window.open(appData.getHost()+'/TimeSheetReport?id='+window.localStorage.getItem('clientEmail')+"&from="+$scope.fromDate +"&to="+$scope.toDate );
 		
 		
 	}
