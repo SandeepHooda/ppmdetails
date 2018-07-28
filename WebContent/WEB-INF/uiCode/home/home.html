@@ -1,13 +1,21 @@
-<ion-view title="Home" cache-view="false"   ng-controller="CTRL_HOME as $ctrl">
+<ion-view title="Home" cache-view="false"   ng-controller="CTRL_HOME as $ctrl" ng-init="getMyTimeSheets();">
 
 <ion-header-bar class="bar-positive">
       <h1 class="title">Home</h1>   
 </ion-header-bar>
 
 <ion-content class="padding">
-	<div>
-	
-		Home
+	<div ng-show="viewMode">
+		<ion-item class="smallPadding" ng-repeat="timeSheet in pendingTimeSheets track by $index" >
+			<button class="button button-calm order-button buttonSmall timeSheetBtn" ng-click="filltimeSheet(({{$index}}))">{{timeSheet}} </button>
+		</ion-item>
+	</div>
+	<div ng-show="!viewMode">
+	{{editTimeSheetDate}}
+		<input class="loginFields"  type="text" placeholder="Billable" ng-model="sheet.billableHours" />
+		<input class="loginFields"  type="text" placeholder="Non Billable" ng-model="sheet.nonBillableHours" />
+		<input class="loginFields" type="text" placeholder="Remarks" ng-model="sheet.remarks" />
+		<button class="button button-calm order-button buttonSmall timeSheetBtn" ng-click="submit()">Submit</button>
 	</div>
 </ion-content>
 </ion-view>

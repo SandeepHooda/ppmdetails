@@ -24,4 +24,10 @@ public class TimeSheetEntry {
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
 	}
+	public int getEditVersion() {
+		return editVersion;
+	}
+	public void setEditVersion(int editVersion) {
+		this.editVersion = editVersion;
+	}
 }

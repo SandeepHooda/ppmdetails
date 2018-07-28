@@ -29,8 +29,57 @@ APP.SERVICES.service ('appData',['$window','dataRestore','$ionicPopup',
 		}
 	}
 	
+	this.getCommingMondays = function ( startDate,  countOfMondays) {
+		startDate = ""+startDate;
+		var d = new Date(startDate.substring(0, 4),( startDate.substring(4, 6)-1), startDate.substring(6)),
+	        month = d.getMonth(),
+	        mondays = [];
+		var i=0;
+	    while (i<countOfMondays) {
+	    	i++;
+	        mondays.push(new Date(d.getTime()));
+	        d.setDate(d.getDate() + 7);
+	    }
+
+	    return mondays;
+	}
 	
 	
+	this.getMondayOfThisWeek = function () {
+	    var d = new Date(),
+	        month = d.getMonth(),
+	        mondays = [];
+
+	    
+	    while (d.getDay() !== 1) {
+	        d.setDate(d.getDate() - 1);
+	        
+	    }
+	   
+
+	    return new Date(d.getTime());
+	}
+	
+	 this.getAllMondaysOfMonth = function() {
+	    var d = new Date(),
+	        month = d.getMonth(),
+	        mondays = [];
+
+	    d.setDate(1);
+
+	    // Get the first Monday in the month
+	    while (d.getDay() !== 1) {
+	        d.setDate(d.getDate() + 1);
+	    }
+
+	    // Get all the other Mondays in the month
+	    while (d.getMonth() === month) {
+	        mondays.push(new Date(d.getTime()));
+	        d.setDate(d.getDate() + 7);
+	    }
+
+	    return mondays;
+	}
 }
 
 ]);

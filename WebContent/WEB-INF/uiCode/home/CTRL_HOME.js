@@ -27,7 +27,114 @@ APP.CONTROLLERS.controller ('CTRL_HOME',['$scope','$state','$rootScope','$ionicL
 	            }
 	        }
 	 dataLayer.push({'pageTitle': 'Home'});    // Better
+	 $scope.viewMode = true;
+	 $scope.sheet = {};
+	 $scope.editTimeSheetDate = "";
+	 $scope.filltimeSheet = function(index){
+		 $scope.viewMode = false;
+		 $scope.sheet.billableHours = 40;
+		
+		 $scope.editTimeSheetDate  = ""+$scope.pendingTimeSheets[index];
+	 }
 	 
-		  
+	 
+	 $scope.submit =  function(){
+		 if ($scope.sheet.billableHours != 40 || $scope.sheet.nonBillableHours > 0) {
+			 if(!$scope.sheet.remarks){
+				 alert("please fill the remarks");
+				 return;
+			 }
+		 }
+		 
+			 //Ready to submit the timesheet
+			 $scope.$emit('showBusy');
+			 var dto = {}
+			 dto.currentEntry = $scope.sheet;
+			 dto.clientEmail = window.localStorage.getItem('clientEmail');
+			 dto.currentEntryDate = $scope.editTimeSheetDate;
+			 $http.post(appData.getHost()+'/ws/timesheet/', dto, config)
+		  		.then(function(response){
+		  			$scope.$emit('hideBusy');
+		  			$scope.viewMode = true;
+		  			$scope.getMyTimeSheets();
+		  			
+		  		
+		  		},
+				function(response){	
+		  			$scope.$emit('hideBusy');
+		  		}
+		  		);
+			 
+		 
+	 }
+	 
+	 
+	 $scope.pendingTimeSheets = [];
+	 $scope.createFutureTimeSheets = function(userTimeSheets){
+		 
+		 var unFilledTimeStart = 0;
+		 if (userTimeSheets.allTimeSheets && userTimeSheets.allTimeSheets.length > 0 ){
+			 unFilledTimeStart = userTimeSheets.allTimeSheets[0].weekStartDate;
+			 unFilledTimeStart = ""+unFilledTimeStart;
+			var d = new Date(unFilledTimeStart.substring(0, 4), (unFilledTimeStart.substring(4, 6)-1), unFilledTimeStart.substring(6));
+			d.setDate(d.getDate() + 7);
+			var month = d.getMonth();
+			 var day = d.getDate();
+			 month++;
+			 if (month <10){
+				 month = "0"+month;
+			 }
+			 if (day <10){
+				 day = "0"+day;
+			 }
+			 unFilledTimeStart = d.getFullYear() +month+day; 
+		 }else {
+			 var thisMonday = appData.getMondayOfThisWeek();
+			 var month = thisMonday.getMonth();
+			 var day = thisMonday.getDate();
+			 month++;
+			 if (month <10){
+				 month = "0"+month;
+			 }
+			 if (day <10){
+				 day = "0"+day;
+			 }
+			 unFilledTimeStart = thisMonday.getFullYear() +month+day;
+		 }
+		 
+		 $scope.pendingTimeSheets = [];
+		 var pendingSheets= appData.getCommingMondays(unFilledTimeStart,4);
+		 for (i=pendingSheets.length-1;i>=0;i--){
+			 var date = pendingSheets[i];
+			 var month = date.getMonth();
+			 month++;
+			 var day = date.getDate();
+			 if (month <10){
+				 month = "0"+month;
+			 }
+			 if (day <10){
+				 day = "0"+day;
+			 }
+			 $scope.pendingTimeSheets.push(date.getFullYear()+month+day );
+			// $scope.pendingTimeSheets.push(date)
+		 }
+		 
+	 }
+	 $scope.getMyTimeSheets = function(){
+		 $scope.$emit('showBusy');
+			$http.get(appData.getHost()+'/ws/timesheet/'+window.localStorage.getItem('clientEmail'))
+	  		.then(function(response){
+	  			$scope.$emit('hideBusy');
+	  			if (response.data ){
+	  				
+	  				$scope.createFutureTimeSheets(response.data); 
+	  			}
+	  			
+	  		},
+			function(response){
+	  			$scope.$emit('hideBusy');
+	  			
+			});
+	 }
 	 
 }])

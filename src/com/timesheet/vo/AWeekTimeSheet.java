@@ -1,11 +1,12 @@
 package com.timesheet.vo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AWeekTimeSheet {
 
 	private int weekStartDate;
-	private List<TimeSheetEntry> timeSheetEntry;
+	private List<TimeSheetEntry> timeSheetEntry = new ArrayList<TimeSheetEntry>();
 	public int getWeekStartDate() {
 		return weekStartDate;
 	}

@@ -1,10 +1,11 @@
 package com.timesheet.vo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TimeSheetVO {
 	private String _id;
-	private List<AWeekTimeSheet> allTimeSheets;
+	private List<AWeekTimeSheet> allTimeSheets = new ArrayList<AWeekTimeSheet>();
 	public String get_id() {
 		return _id;
 	}
