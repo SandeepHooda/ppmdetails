@@ -1,5 +1,8 @@
 package com.login.vo;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class LoginVO {
 	
 	private String _id;
@@ -11,6 +14,7 @@ public class LoginVO {
 	private String emailOTP;
 	private boolean manager;
 	private boolean inactive;
+	private Set<String> reportees = new HashSet<String>();
 
 	public String getErrorMessage() {
 		return errorMessage;
@@ -78,6 +82,14 @@ public class LoginVO {
 
 	public void setInactive(boolean inactive) {
 		this.inactive = inactive;
+	}
+
+	public Set<String> getReportees() {
+		return reportees;
+	}
+
+	public void setReportees(Set<String> reportees) {
+		this.reportees = reportees;
 	}
 
 	

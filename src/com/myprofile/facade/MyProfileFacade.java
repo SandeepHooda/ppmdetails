@@ -32,7 +32,7 @@ public class MyProfileFacade {
 			
 		}
 		
-		
+		new LoginFacade().isUserManager(userFromDB);
 		return userFromDB;
 	}
 	public LoginVO deleteMyProfile(String  clientEmail) {

@@ -3,7 +3,9 @@ package com.login.facade;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -28,8 +30,27 @@ public class LoginFacade {
 		MangoDB.createNewDocumentInCollection("ppm","registered-users",  loginVOJson, MangoDB.mlabKeySonu);
 		
 		loginVO.setEmailOTP(sendVerificationEmail( loginVO));
-		
+		isUserManager( loginVO);
 		return loginVO;
+	}
+	public void isUserManager(LoginVO loginVO) {
+		String allUsersJson = "[" +MangoDB.getDocumentWithQuery("ppm","registered-users", null, null, false, MangoDB.mlabKeySonu, null) +"]";
+		Gson  json = new Gson();
+		List<LoginVO> allUsers= json.fromJson(allUsersJson, new TypeToken<List<LoginVO>>() {}.getType());
+		Set<String> reportees = new HashSet<String>();
+		if (allUsers != null) {
+			for (LoginVO aUser : allUsers) {
+				if (aUser.getManagerInfyEmail().equalsIgnoreCase(loginVO.getInfyEmail())) {
+					reportees.add(aUser.getClientEmail());
+				}
+			}
+		}
+		if (reportees.size() > 0) {
+			loginVO.setManager(true);
+		}else {
+			loginVO.setManager(false);
+		}
+		loginVO.setReportees(reportees);
 	}
 	private String sendVerificationEmail(LoginVO loginVO) {
 		EmailOTP emailOTP = new EmailOTP() ;

@@ -3,10 +3,7 @@ APP.SERVICES.service ('appData',['$window','dataRestore','$ionicPopup',
 	
 	this.getHost = function () {
 		var host = "https://ppmdetails.appspot.com";
-		if ($window.location.host == ""){
-			host = "phone";
-			
-		}else if ($window.location.host.indexOf("localhost:8080") >=0 ){
+		 if ($window.location.host.indexOf("localhost:8080") >=0 ){
 			host = "";
 		}
 		
