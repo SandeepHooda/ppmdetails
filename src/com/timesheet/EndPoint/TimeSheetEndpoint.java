@@ -25,6 +25,11 @@ public interface TimeSheetEndpoint {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getUsertimeSheets(@PathParam("clientEmail") String clientEmail);
 	
+	@GET
+	@Path("/sendmessage/{from}/{message}")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response sendMessage(@PathParam("from") String from,@PathParam("message") String message);
+	
 	@POST
 	@Path("")
 	@Consumes(MediaType.APPLICATION_JSON)

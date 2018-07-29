@@ -8,12 +8,33 @@ APP.CONTROLLERS.controller ('CTRL_Reporting',['$scope','$state','$http','$ionicL
 	}else {
 		$scope.manager = false;
 	}
+	$scope.messageToTeam = "Please fill you advance timesheet and its details on the portal till this month end. "
+	$scope.messageSend = "";
+		
 	 
 	 var config = {
 	            headers : {
 	                'Content-Type': 'application/json;'
 	            }
 	        }
+	
+	$scope.sendMsgToTeam = function(){
+		 $scope.messageSend = "";
+		 $scope.$emit('showBusy');
+			$http.get(appData.getHost()+'/ws/timesheet/sendmessage/'+window.localStorage.getItem('clientEmail')+"/"+$scope.messageToTeam )
+	  		.then(function(response){
+	  			$scope.$emit('hideBusy');
+	  			if (response.data ){
+	  				
+	  				 $scope.messageSend = response.data._id; 
+	  			}
+	  			
+	  		},
+			function(response){
+	  			$scope.$emit('hideBusy');
+	  			
+			});
+	}
 	 
 	 var fromDateObj = {
 		      callback: function (val) {  //Mandatory

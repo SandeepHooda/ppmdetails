@@ -4,10 +4,20 @@
     </ion-header-bar>
  <ion-content class="padding">
  <div ng-show="manager">
- Please select the date and hit generate report
+ <b>Please select the date and hit generate report</b>
  <input class="loginFields"  type="text" placeholder="From Date" ng-model="fromDate" ng-click="openFromDatePicker();"  />
  <input class="loginFields"  type="text" placeholder="To Date" ng-model="toDate" ng-click="openToDatePicker();"  />
  <button ng-click="download()" id="downloadBtn" name="downloadBtn"  class="button button-balanced order-button fullBtn">Download</button>
+  <br/>
+   <br/>
+ <hr/>
+ <br/>
+  <br/>
+  <b>Message to team</b>
+  <br/>
+ {{messageSend}}
+ <input class="loginFields"  type="text" placeholder="Message to Team" ng-model="messageToTeam"  />
+ <button ng-click="sendMsgToTeam()" id="teamMsgBtn" name="teamMsgBtn"  class="button button-balanced order-button fullBtn">Send Message to Team</button>
  </div>
  <div ng-show="!manager">
  You don't have access to the module

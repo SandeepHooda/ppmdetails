@@ -21,6 +21,7 @@ import org.apache.cxf.common.util.CollectionUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.login.vo.LoginVO;
+import com.timesheet.facade.TimeSheetFacade;
 import com.timesheet.vo.AWeekTimeSheet;
 import com.timesheet.vo.TimeSheetEntry;
 import com.timesheet.vo.TimeSheetVO;
@@ -58,33 +59,7 @@ public class TimeSheetReport extends HttpServlet {
     	}
     	return Integer.parseInt(join);
     }
-    private Set<String>  getReportees(String managerClientEmail) {
-    	String managerJson = MangoDB.getDocumentWithQuery("ppm","registered-users", managerClientEmail, null, true, MangoDB.mlabKeySonu, null) ;
-		Gson  json = new Gson();
-		LoginVO manager= json.fromJson(managerJson, new TypeToken<LoginVO>() {}.getType());
-		
-		
-		String reeporteeQuery = "{\"managerInfyEmail\":\""+manager.getManagerInfyEmail()+"\"}";
-		try {
-			reeporteeQuery =URLEncoder.encode(reeporteeQuery, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			
-			e.printStackTrace();
-		}
-		reeporteeQuery = "&q="+reeporteeQuery;
-		String reporteeJson = "["+MangoDB.getDocumentWithQuery("ppm","registered-users", null, null, false, MangoDB.mlabKeySonu, reeporteeQuery)+"]" ;
-		
-		List<LoginVO> reporteeList= json.fromJson(reporteeJson, new TypeToken<List<LoginVO>>() {}.getType());
-		Set<String> reportees = new HashSet<String>();
-		if (null != reporteeList && reporteeList.indexOf("null") <0) {
-			for (LoginVO aReportee: reporteeList) {
-				reportees.add(aReportee.get_id());
-			}
-		}
-		
-		
-		return reportees;
-    }
+   
     private List<TimeSheetVO> getTimeSheetOfReportees(Set<String> reportees) {
     	String reeporteeQuery = "{\"_id\":{$in:[";//"]}}";
     	for (String aReportee: reportees) {
@@ -139,9 +114,14 @@ public class TimeSheetReport extends HttpServlet {
 		String managerClientEmail = request.getParameter("id");
 		int from = getDate(request.getParameter("from"));
 		int to = getDate(request.getParameter("to"));
+		boolean includeInactive = true;
+		List<LoginVO> reporteesList = new TimeSheetFacade().getReportees(managerClientEmail, includeInactive);
 		
-		Set<String> reportees = getReportees(managerClientEmail);
-		List<TimeSheetVO> reporteesTimeSheet =getTimeSheetOfReportees(reportees);
+		Set<String> reporteesSet = new HashSet<String>();
+		for (LoginVO aReportee: reporteesList) {
+			reporteesSet.add(aReportee.get_id());
+		}
+		List<TimeSheetVO> reporteesTimeSheet =getTimeSheetOfReportees(reporteesSet);
 		
 		 response.setContentType("text/csv");
 		 response.setHeader("Content-Disposition", "attachment; filename=\"timeSheet.csv\"");

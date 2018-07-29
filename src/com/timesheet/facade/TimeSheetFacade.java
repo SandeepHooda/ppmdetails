@@ -2,11 +2,22 @@ package com.timesheet.facade;
 
 
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
+import com.communication.email.EmailAddess;
+import com.communication.email.EmailVO;
+import com.communication.email.MailService;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.login.vo.EmailOTP;
+import com.login.vo.LoginVO;
+import com.product.Response.ResponseStatus;
 import com.timesheet.vo.AWeekTimeSheet;
 import com.timesheet.vo.TimeSheetEntry;
 import com.timesheet.vo.TimeSheetVO;
@@ -29,7 +40,43 @@ public class TimeSheetFacade {
 		
 		return userAllTimeSheet;
 	}
+	public EmailOTP sendMessage( String from,String message) {
+		boolean includeInactive = false;
+		List<LoginVO> reporteesList = new TimeSheetFacade().getReportees(from, includeInactive);
+		String messageSentTo = message+"  This message has been sent to ";
+		
+		for (LoginVO aReportee: reporteesList) {
+			sendEmailMessage(aReportee.get_id(),  message, from);
+			messageSentTo += " "+aReportee.get_id();
+		}
+		EmailOTP status = new EmailOTP();
+		status.set_id(messageSentTo);
+		return status;
+	}
 	
+	private void sendEmailMessage(String toAddress, String message, String fromAddress ) {
+		
+		
+		EmailVO emalVO = new EmailVO();
+		emalVO.setUserName("personal.reminder.notification@gmail.com");
+		emalVO.setPassword(MailService.key);
+		emalVO.setSubject("Please fill your timesheet details in advance");
+		
+		emalVO.setHtmlContent(message+" <br/><br/>"
+				+ "https://ppmdetails.appspot.com/");
+		EmailAddess from = new EmailAddess();
+		from.setLabel(fromAddress);
+		from.setAddress(emalVO.getUserName());
+		
+		List<EmailAddess> receipients = new ArrayList<>();
+		EmailAddess to = new EmailAddess();
+		to.setAddress(toAddress);
+		emalVO.setFromAddress(from);
+		receipients.add(to);
+		emalVO.setToAddress(receipients);
+		MailService.sendSimpleMail(emalVO);
+		
+	}
 	public TimeSheetVO submitTimeSheet(String  clientEmail,TimeSheetEntry currentEntry, int currentEntryDate) {
 		clientEmail =clientEmail.toLowerCase();
 		TimeSheetVO userAllTimeSheet = new TimeSheetVO();
@@ -82,6 +129,35 @@ public class TimeSheetFacade {
 		return userAllTimeSheet;
 	}
 	
-	
+	 public List<LoginVO>  getReportees(String managerClientEmail, boolean includeInactive) {
+	    	String managerJson = MangoDB.getDocumentWithQuery("ppm","registered-users", managerClientEmail, null, true, MangoDB.mlabKeySonu, null) ;
+			Gson  json = new Gson();
+			LoginVO manager= json.fromJson(managerJson, new TypeToken<LoginVO>() {}.getType());
+			
+			
+			String reeporteeQuery = "{\"managerInfyEmail\":\""+manager.getManagerInfyEmail()+"\"}";
+			try {
+				reeporteeQuery =URLEncoder.encode(reeporteeQuery, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				
+				e.printStackTrace();
+			}
+			reeporteeQuery = "&q="+reeporteeQuery;
+			String reporteeJson = "["+MangoDB.getDocumentWithQuery("ppm","registered-users", null, null, false, MangoDB.mlabKeySonu, reeporteeQuery)+"]" ;
+			
+			List<LoginVO> reporteeDBList= json.fromJson(reporteeJson, new TypeToken<List<LoginVO>>() {}.getType());
+			List<LoginVO> reportees = new ArrayList<LoginVO>();
+			if (null != reporteeDBList && reporteeDBList.indexOf("null") <0) {
+				for (LoginVO aReportee: reporteeDBList) {
+					if (includeInactive || !aReportee.isInactive() ) {
+						reportees.add(aReportee);
+					}
+					
+				}
+			}
+			
+			
+			return reportees;
+	    }
 
 }
