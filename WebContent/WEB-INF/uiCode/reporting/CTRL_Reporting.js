@@ -17,7 +17,39 @@ APP.CONTROLLERS.controller ('CTRL_Reporting',['$scope','$state','$http','$ionicL
 	                'Content-Type': 'application/json;'
 	            }
 	        }
-	
+	$scope.getDefaulterList = function(){
+		 $scope.$emit('showBusy');
+		 $http.get(appData.getHost()+'/ws/timesheet/defaulter/'+window.localStorage.getItem('clientEmail'))
+	  		.then(function(response){
+	  			$scope.$emit('hideBusy');
+	  			if (response.data ){
+	  				
+	  				 $scope.defaulters = response.data.defaulters; 
+	  			}
+	  			
+	  		},
+			function(response){
+	  			$scope.$emit('hideBusy');
+	  			
+			});
+	 }
+	 $scope.remmindDefaulters = function(){
+		 $scope.$emit('showBusy');
+		 var dto = {};
+		 dto.managerClientID = window.localStorage.getItem('clientEmail');
+		 dto.defaulters = $scope.defaulters;
+		 $http.post(appData.getHost()+'/ws/timesheet/remindDefaulters', dto, config)
+	  		.then(function(response){
+	  			$scope.$emit('hideBusy');
+	  			alert("Reminder email has been sent them.")
+	  			
+	  		
+	  		},
+			function(response){	
+	  			$scope.$emit('hideBusy');
+	  		}
+	  		);
+	 }
 	$scope.sendMsgToTeam = function(){
 		 $scope.messageSend = "";
 		 $scope.$emit('showBusy');

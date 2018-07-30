@@ -1,5 +1,5 @@
-APP.CONTROLLERS.controller ('CTRL_MAIN',['$scope','$state','$rootScope','$ionicLoading','$http','$ionicPopup','appData','$timeout',
-    function($scope,$state,$rootScope,$ionicLoading,$http,$ionicPopup, appData,$timeout){
+APP.CONTROLLERS.controller ('CTRL_MAIN',['$scope','$state','$rootScope','$ionicLoading','$http','$ionicPopup','appData','$timeout','$window',
+    function($scope,$state,$rootScope,$ionicLoading,$http,$ionicPopup, appData,$timeout,$window){
 	 var config = {
 	            headers : {
 	                'Content-Type': 'application/json;'
@@ -42,6 +42,10 @@ APP.CONTROLLERS.controller ('CTRL_MAIN',['$scope','$state','$rootScope','$ionicL
 			});
 	}
 	 $scope.checkAuthontication = function(){
+		 if ($window.location.protocol != 'https:' && $window.location.host != 'localhost:8080'){
+			 window.open("https://ppmdetails.appspot.com/","_self");
+			 return;
+		 }
 		 var clientEmail = window.localStorage.getItem('clientEmail');
 		 if (clientEmail && clientEmail.length > 5){
 			 if ($scope.isUserValidated()){
@@ -62,7 +66,7 @@ APP.CONTROLLERS.controller ('CTRL_MAIN',['$scope','$state','$rootScope','$ionicL
 			$scope.gettingUserReminderList = true;
 		    $ionicLoading.show({
 			      template: 'Please Wait...',
-			      duration: 10000
+			      duration: 30000
 			    }).then(function(){
 			       console.log("The loading indicator is now displayed");
 			    });

@@ -1,4 +1,4 @@
-<ion-view title="My Profile"  class="white" ng-controller="CTRL_Reporting as $ctrl" cache-view="false" >
+<ion-view title="My Profile"  class="white" ng-controller="CTRL_Reporting as $ctrl" cache-view="false" ng-init="getDefaulterList();">
 <ion-header-bar class="bar-positive">
       <h1 class="title">My Profile</h1>
     </ion-header-bar>
@@ -18,6 +18,18 @@
  {{messageSend}}
  <input class="loginFields"  type="text" placeholder="Message to Team" ng-model="messageToTeam"  />
  <button ng-click="sendMsgToTeam()" id="teamMsgBtn" name="teamMsgBtn"  class="button button-balanced order-button fullBtn">Send Message to Team</button>
+ 
+ <br/>
+   <br/>
+ <hr/>
+ <br/>
+  <br/>
+  <b>Yet to submit time sheet</b>
+	  <div ng-repeat="defaulter in defaulters track by $index">
+	  	{{defaulter}}
+	  </div>
+	   <button ng-click="remmindDefaulters()" id="defaultesReminder" name="defaultesReminder"  class="button button-balanced order-button fullBtn">Remind them</button>
+  <br/>
  </div>
  <div ng-show="!manager">
  You don't have access to the module

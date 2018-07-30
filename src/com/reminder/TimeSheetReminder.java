@@ -25,6 +25,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.login.vo.EmailOTP;
 import com.login.vo.LoginVO;
+import com.timesheet.facade.TimeSheetFacade;
 import com.timesheet.vo.AWeekTimeSheet;
 import com.timesheet.vo.TimeSheetVO;
 
@@ -45,87 +46,13 @@ public class TimeSheetReminder extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
 
-    private String getLatestMonday() {
-    	Calendar date = new GregorianCalendar();
-    	//date.add(Calendar.DATE, -2);
-		int day = date.get(Calendar.DAY_OF_WEEK);
-		int weeksToGoBack = 2;
-		if (day == Calendar.FRIDAY ||day == Calendar.SATURDAY ||day == Calendar.SUNDAY ) {
-			weeksToGoBack--;
-		}
-		//Mast timesheet recent period
-		while(true) {
-			if (date.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY) {
-				weeksToGoBack--;
-				int month = date.get(Calendar.MONTH);
-				month++;
-				 day =  date.get(Calendar.DATE);
-				String monday = ""+date.get(Calendar.YEAR);
-				if (month<10) {
-					monday +="0"+month;
-				}else {
-					monday += month;
-				}
-				if (day<10) {
-					monday +="0"+day;
-				}else {
-					monday += day;
-				}
-				if (weeksToGoBack <=0) {
-					System.out.println(monday);
-					return monday;
-					
-				}
-				
-			}
-			date.add(Calendar.DATE, -1);
-			
-			
-		}
-    }
+   
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		int recentMonday = Integer.parseInt(getLatestMonday());
 		
-		String allTimeShetsJson = "["+ MangoDB.getDocumentWithQuery("ppm","timesheets", null, null, false, MangoDB.mlabKeySonu, null)+"]" ;
-		Gson  json = new Gson();
-		List<TimeSheetVO> allTimeShets = json.fromJson(allTimeShetsJson, new TypeToken<List<TimeSheetVO>>() {}.getType());
-		
-		String query = "{\"inactive\":false}";
-		try {
-			query =URLEncoder.encode(query, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			
-			e.printStackTrace();
-		}
-		query = "&q="+query;
-		String activeUsersJson = "["+ MangoDB.getDocumentWithQuery("ppm","registered-users", null, null, false, MangoDB.mlabKeySonu, query)+"]" ;
-		json = new Gson();
-		List<LoginVO> activeUsers = json.fromJson(activeUsersJson, new TypeToken<List<LoginVO>>() {}.getType());
-		Set<String> activeUsersSet = new HashSet<String>();
-		for (LoginVO aUser:activeUsers ) {
-			activeUsersSet.add(aUser.get_id());
-		}
-		
-		
-		Set<String> defaulters = new HashSet<String>();
-		defaulters.addAll(activeUsersSet);
-		for (TimeSheetVO aUserTimeSheets: allTimeShets) {
-			if (activeUsersSet.contains(aUserTimeSheets.get_id())) {
-				boolean defaulter = true;
-				for (AWeekTimeSheet aWeekTime : aUserTimeSheets.getAllTimeSheets()) {
-					if (aWeekTime.getWeekStartDate() == recentMonday) {
-						defaulter = false;
-						defaulters.remove(aUserTimeSheets.get_id());
-						break;
-					}
-				}
-				
-			}
-		}
-		
+		Set<String> defaulters =new TimeSheetFacade().getDefaulterList(null);//All defaulters across all managers
 		for (String defaulter: defaulters) {
 			System.out.println(" defaulter "+defaulter);
 			sendReminderEmail(defaulter);

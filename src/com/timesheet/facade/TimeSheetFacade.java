@@ -5,6 +5,8 @@ package com.timesheet.facade;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,6 +21,7 @@ import com.login.vo.EmailOTP;
 import com.login.vo.LoginVO;
 import com.product.Response.ResponseStatus;
 import com.timesheet.vo.AWeekTimeSheet;
+import com.timesheet.vo.Defaulters;
 import com.timesheet.vo.TimeSheetEntry;
 import com.timesheet.vo.TimeSheetVO;
 
@@ -26,7 +29,105 @@ import mangodb.MangoDB;
 
 public class TimeSheetFacade {
 	private static final Logger log = Logger.getLogger(TimeSheetFacade.class.getName());
+	 private String getLatestMonday() {
+	    	Calendar date = new GregorianCalendar();
+	    	//date.add(Calendar.DATE, -2);
+			int day = date.get(Calendar.DAY_OF_WEEK);
+			int weeksToGoBack = 2;
+			if (day == Calendar.FRIDAY ||day == Calendar.SATURDAY ||day == Calendar.SUNDAY ) {
+				weeksToGoBack--;
+			}
+			//Mast timesheet recent period
+			while(true) {
+				if (date.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY) {
+					weeksToGoBack--;
+					int month = date.get(Calendar.MONTH);
+					month++;
+					 day =  date.get(Calendar.DATE);
+					String monday = ""+date.get(Calendar.YEAR);
+					if (month<10) {
+						monday +="0"+month;
+					}else {
+						monday += month;
+					}
+					if (day<10) {
+						monday +="0"+day;
+					}else {
+						monday += day;
+					}
+					if (weeksToGoBack <=0) {
+						System.out.println(monday);
+						return monday;
+						
+					}
+					
+				}
+				date.add(Calendar.DATE, -1);
+				
+				
+			}
+	    }
 	
+	 public Defaulters getDefaulterListForManager(String managerClientEmail){
+		 Defaulters defaulter = new Defaulters();
+		 String loginVoJson = MangoDB.getDocumentWithQuery("ppm","registered-users", managerClientEmail, null, true, MangoDB.mlabKeySonu, null);
+		 Gson json = new Gson();
+		 LoginVO loginVo = json.fromJson(loginVoJson, new TypeToken<LoginVO>() {}.getType());
+		 defaulter.setDefaulters(getDefaulterList( loginVo.getManagerInfyEmail()));
+		 return defaulter;
+	 }
+	public Set<String> getDefaulterList(String managerInfyID){
+		
+		int recentMonday = Integer.parseInt(getLatestMonday());
+		
+		String allTimeShetsJson = "["+ MangoDB.getDocumentWithQuery("ppm","timesheets", null, null, false, MangoDB.mlabKeySonu, null)+"]" ;
+		Gson  json = new Gson();
+		List<TimeSheetVO> allTimeShets = json.fromJson(allTimeShetsJson, new TypeToken<List<TimeSheetVO>>() {}.getType());
+		
+		String query = "{\"inactive\":false}";
+		try {
+			query =URLEncoder.encode(query, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			
+			e.printStackTrace();
+		}
+		query = "&q="+query;
+		String activeUsersJson = "["+ MangoDB.getDocumentWithQuery("ppm","registered-users", null, null, false, MangoDB.mlabKeySonu, query)+"]" ;
+		json = new Gson();
+		List<LoginVO> activeUsers = json.fromJson(activeUsersJson, new TypeToken<List<LoginVO>>() {}.getType());
+		Set<String> activeUsersSet = new HashSet<String>();
+		for (LoginVO aUser:activeUsers ) {
+			activeUsersSet.add(aUser.get_id());
+		}
+		
+		
+		Set<String> defaulters = new HashSet<String>();
+		if (managerInfyID == null ) {
+			defaulters.addAll(activeUsersSet);//All the defaulters
+		}else {
+			for (LoginVO aUser:activeUsers ) {
+				if(managerInfyID.equalsIgnoreCase(aUser.getManagerInfyEmail())) {
+					defaulters.add(aUser.get_id());
+				}
+			}
+		}
+		
+		for (TimeSheetVO aUserTimeSheets: allTimeShets) {
+			if (activeUsersSet.contains(aUserTimeSheets.get_id())) {
+				boolean defaulter = true;
+				for (AWeekTimeSheet aWeekTime : aUserTimeSheets.getAllTimeSheets()) {
+					if (aWeekTime.getWeekStartDate() == recentMonday) {
+						defaulter = false;
+						defaulters.remove(aUserTimeSheets.get_id());
+						break;
+					}
+				}
+				
+			}
+		}
+		return defaulters;
+		
+	}
 	public TimeSheetVO getUsertimeSheets(String  clientEmail) {
 		clientEmail =clientEmail.toLowerCase();
 		TimeSheetVO userAllTimeSheet = new TimeSheetVO();
@@ -40,13 +141,20 @@ public class TimeSheetFacade {
 		
 		return userAllTimeSheet;
 	}
+	public Defaulters remindDefaulters(Defaulters defaulters) {
+		for (String  toAddress: defaulters.getDefaulters()) {
+			sendEmailMessage(toAddress,  "You have not submitted you ppm details. Please submit them in next 1 hour.", "Immediate Action required", defaulters.getManagerClientID());
+			
+		}
+		return defaulters;
+	}
 	public EmailOTP sendMessage( String from,String message) {
 		boolean includeInactive = false;
 		List<LoginVO> reporteesList = new TimeSheetFacade().getReportees(from, includeInactive);
 		String messageSentTo = message+"  This message has been sent to ";
 		
 		for (LoginVO aReportee: reporteesList) {
-			sendEmailMessage(aReportee.get_id(),  message, from);
+			sendEmailMessage(aReportee.get_id(),  message, "Please fill your timesheet details in advace", from);
 			messageSentTo += " "+aReportee.get_id();
 		}
 		EmailOTP status = new EmailOTP();
@@ -54,13 +162,13 @@ public class TimeSheetFacade {
 		return status;
 	}
 	
-	private void sendEmailMessage(String toAddress, String message, String fromAddress ) {
+	private void sendEmailMessage(String toAddress, String message, String subject, String fromAddress ) {
 		
 		
 		EmailVO emalVO = new EmailVO();
 		emalVO.setUserName("personal.reminder.notification@gmail.com");
 		emalVO.setPassword(MailService.key);
-		emalVO.setSubject("Please fill your timesheet details in advance");
+		emalVO.setSubject(subject);
 		
 		emalVO.setHtmlContent(message+" <br/><br/>"
 				+ "https://ppmdetails.appspot.com/");

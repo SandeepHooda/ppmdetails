@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.login.vo.LoginVO;
+import com.timesheet.vo.Defaulters;
 import com.timesheet.vo.TimeSheetEntry;
 import com.timesheet.vo.TimeSheetUpdateVo;
 import com.timesheet.vo.TimeSheetVO;
@@ -24,6 +25,15 @@ public interface TimeSheetEndpoint {
 	@Path("/{clientEmail}")
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getUsertimeSheets(@PathParam("clientEmail") String clientEmail);
+	@GET
+	@Path("/defaulter/{clientEmail}")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getDefaulterListForManager(@PathParam("clientEmail") String managerClientEmail);
+	@POST
+	@Path("/remindDefaulters")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response remindDefaulters( Defaulters defaulters);
 	
 	@GET
 	@Path("/sendmessage/{from}/{message}")

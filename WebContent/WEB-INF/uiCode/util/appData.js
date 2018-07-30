@@ -10,6 +10,7 @@ APP.SERVICES.service ('appData',['$window','dataRestore','$ionicPopup',
 		return host;
 	}
 	
+	
 	this.showErrorMessage = function(httpCode){
 		if ( httpCode == 403){
 			var confirmPopup = $ionicPopup.confirm({
