@@ -113,10 +113,10 @@ public class TimeSheetFacade {
 		}
 		
 		for (TimeSheetVO aUserTimeSheets: allTimeShets) {
-			if (activeUsersSet.contains(aUserTimeSheets.get_id())) {
+			if (defaulters.contains(aUserTimeSheets.get_id())) {
 				boolean defaulter = true;
 				for (AWeekTimeSheet aWeekTime : aUserTimeSheets.getAllTimeSheets()) {
-					if (aWeekTime.getWeekStartDate() == recentMonday) {
+					if (aWeekTime.getWeekStartDate() >= recentMonday) {
 						defaulter = false;
 						defaulters.remove(aUserTimeSheets.get_id());
 						break;
