@@ -4,13 +4,19 @@ package com.timesheet.facade;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
+
+import org.apache.cxf.common.util.CollectionUtils;
 
 import com.communication.email.EmailAddess;
 import com.communication.email.EmailVO;
@@ -21,6 +27,7 @@ import com.login.vo.EmailOTP;
 import com.login.vo.LoginVO;
 import com.product.Response.ResponseStatus;
 import com.timesheet.vo.AWeekTimeSheet;
+import com.timesheet.vo.AWeekTimeSheetComparator;
 import com.timesheet.vo.Defaulters;
 import com.timesheet.vo.TimeSheetEntry;
 import com.timesheet.vo.TimeSheetVO;
@@ -29,6 +36,7 @@ import mangodb.MangoDB;
 
 public class TimeSheetFacade {
 	private static final Logger log = Logger.getLogger(TimeSheetFacade.class.getName());
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 	 private String getLatestMonday() {
 	    	Calendar date = new GregorianCalendar();
 	    	//date.add(Calendar.DATE, -2);
@@ -114,19 +122,36 @@ public class TimeSheetFacade {
 		
 		for (TimeSheetVO aUserTimeSheets: allTimeShets) {
 			if (defaulters.contains(aUserTimeSheets.get_id())) {
-				boolean defaulter = true;
-				for (AWeekTimeSheet aWeekTime : aUserTimeSheets.getAllTimeSheets()) {
-					if (aWeekTime.getWeekStartDate() >= recentMonday) {
-						defaulter = false;
+				
+				List<AWeekTimeSheet> aUserAllTimeSheets = aUserTimeSheets.getAllTimeSheets();
+				Collections.sort(aUserAllTimeSheets, new AWeekTimeSheetComparator());
+				//for (AWeekTimeSheet aWeekTime : aUserAllTimeSheets) {
+					//if (aWeekTime.getWeekStartDate() >= recentMonday) {
+				int expectedTimeSheetEntries = getWeeksBetweenDates(aUserAllTimeSheets.get(0).getWeekStartDate(), recentMonday);
+						if (expectedTimeSheetEntries == aUserAllTimeSheets.size())
 						defaulters.remove(aUserTimeSheets.get_id());
-						break;
-					}
-				}
+						//break;
+					//}
+				//}
 				
 			}
 		}
 		return defaulters;
 		
+	}
+	private int getWeeksBetweenDates(int startDate, int endDate) {
+		Date start;
+		try {
+			start = sdf.parse(""+startDate);
+			Date end = sdf.parse(""+endDate);
+		       long difference = end.getTime() - start.getTime();
+		       return ((int)(difference / (1000*60*60*24*7)) +1);
+		} catch (ParseException e) {
+			
+			e.printStackTrace();
+		}
+	       
+		return 0;
 	}
 	public TimeSheetVO getUsertimeSheets(String  clientEmail) {
 		clientEmail =clientEmail.toLowerCase();
@@ -136,6 +161,7 @@ public class TimeSheetFacade {
 		String userAllTimeSheetJson = MangoDB.getDocumentWithQuery("ppm","timesheets", clientEmail, null, true, MangoDB.mlabKeySonu, null);
 		if (userAllTimeSheetJson != null && userAllTimeSheetJson.indexOf(clientEmail) > 0) {
 			userAllTimeSheet = json.fromJson(userAllTimeSheetJson, new TypeToken<TimeSheetVO>() {}.getType());
+			Collections.sort(userAllTimeSheet.getAllTimeSheets(), new AWeekTimeSheetComparator());
 		}
 		
 		
@@ -224,8 +250,6 @@ public class TimeSheetFacade {
 					AWeekTimeSheet aWeekTimeSheet = new AWeekTimeSheet();
 					aWeekTimeSheet.setWeekStartDate(currentEntryDate);
 					aWeekTimeSheet.getTimeSheetEntry().add(currentEntry);
-					userAllTimeSheet = new TimeSheetVO();
-					userAllTimeSheet.set_id(clientEmail);
 					userAllTimeSheet.getAllTimeSheets().add(aWeekTimeSheet);
 				}
 			}

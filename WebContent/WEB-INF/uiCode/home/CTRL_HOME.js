@@ -68,15 +68,8 @@ APP.CONTROLLERS.controller ('CTRL_HOME',['$scope','$state','$rootScope','$ionicL
 		 
 	 }
 	 
-	 
-	 $scope.pendingTimeSheets = [];
-	 $scope.createFutureTimeSheets = function(userTimeSheets){
-		 
-		 var unFilledTimeStart = 0;
-		 if (userTimeSheets.allTimeSheets && userTimeSheets.allTimeSheets.length > 0 ){
-			 unFilledTimeStart = userTimeSheets.allTimeSheets[0].weekStartDate;
-			 unFilledTimeStart = ""+unFilledTimeStart;
-			var d = new Date(unFilledTimeStart.substring(0, 4), (unFilledTimeStart.substring(4, 6)-1), unFilledTimeStart.substring(6));
+	 $scope.nextWeek = function(thisWeek){
+		 var d = new Date(thisWeek.substring(0, 4), (thisWeek.substring(4, 6)-1), thisWeek.substring(6));
 			d.setDate(d.getDate() + 7);
 			var month = d.getMonth();
 			 var day = d.getDate();
@@ -87,22 +80,59 @@ APP.CONTROLLERS.controller ('CTRL_HOME',['$scope','$state','$rootScope','$ionicL
 			 if (day <10){
 				 day = "0"+day;
 			 }
-			 unFilledTimeStart = d.getFullYear() +month+day; 
+			 return ""+d.getFullYear() +month+day; 
+		 
+	 }
+	 $scope.pendingTimeSheets = [];
+	 $scope.createFutureTimeSheets = function(userTimeSheets){
+		 $scope.pendingTimeSheets = [];
+		 $scope.missedTimeSheets = [];//time sheet remaining in between two sheets
+		 $scope.missedTimeSheetsSorted = [];
+		 var unFilledTimeStart = 0;
+		 
+		 //Find Monday of the current week
+		 var thisMonday = appData.getMondayOfThisWeek();
+		 var month = thisMonday.getMonth();
+		 var day = thisMonday.getDate();
+		 month++;
+		 if (month <10){
+			 month = "0"+month;
+		 }
+		 if (day <10){
+			 day = "0"+day;
+		 }
+		 var currentWeekStart  = thisMonday.getFullYear() +month+day;
+		//End :: Find Monday of the current week
+		 
+		 
+		 if (userTimeSheets.allTimeSheets && userTimeSheets.allTimeSheets.length > 0 ){//Find if any time sheet is missed since the first time sheet entry
+			 var timeSheetStart = ""+userTimeSheets.allTimeSheets[0].weekStartDate;
+			var index_timeSheet = 1;
+			 while (timeSheetStart < currentWeekStart){// Check from the first time sheet till current date
+				 var nextWeek = $scope.nextWeek(timeSheetStart);//check if user has filled for this week
+				 
+				 if (index_timeSheet < userTimeSheets.allTimeSheets.length){//check any unfilled gap between tow time sheets 
+					 if (nextWeek == userTimeSheets.allTimeSheets[index_timeSheet].weekStartDate){
+						 index_timeSheet++;
+					 }else {
+						 $scope.missedTimeSheets.push(nextWeek); 
+					 }
+				 }else {
+					 $scope.missedTimeSheets.push(nextWeek);  
+				 }
+				 
+				 timeSheetStart =  nextWeek;
+			 }
+			 
+			 for (var i=$scope.missedTimeSheets.length-1;i >=0;i--){
+				 $scope.missedTimeSheetsSorted.push($scope.missedTimeSheets[i])
+			 }
+			 unFilledTimeStart = $scope.nextWeek(nextWeek);
 		 }else {
-			 var thisMonday = appData.getMondayOfThisWeek();
-			 var month = thisMonday.getMonth();
-			 var day = thisMonday.getDate();
-			 month++;
-			 if (month <10){
-				 month = "0"+month;
-			 }
-			 if (day <10){
-				 day = "0"+day;
-			 }
-			 unFilledTimeStart = thisMonday.getFullYear() +month+day;
+			 unFilledTimeStart = currentWeekStart;
 		 }
 		 
-		 $scope.pendingTimeSheets = [];
+		 
 		 var pendingSheets= appData.getCommingMondays(unFilledTimeStart,4);
 		 for (i=pendingSheets.length-1;i>=0;i--){
 			 var date = pendingSheets[i];
@@ -118,7 +148,9 @@ APP.CONTROLLERS.controller ('CTRL_HOME',['$scope','$state','$rootScope','$ionicL
 			 $scope.pendingTimeSheets.push(date.getFullYear()+month+day );
 			// $scope.pendingTimeSheets.push(date)
 		 }
-		 
+		
+			 $scope.pendingTimeSheets = $scope.pendingTimeSheets.concat($scope.missedTimeSheetsSorted);
+		
 	 }
 	 $scope.getMyTimeSheets = function(){
 		 $scope.$emit('showBusy');
