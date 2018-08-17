@@ -33,8 +33,22 @@ APP.CONTROLLERS.controller ('CTRL_HOME',['$scope','$state','$rootScope','$ionicL
 	 $scope.filltimeSheet = function(index){
 		 $scope.viewMode = false;
 		 $scope.sheet.billableHours = 40;
-		
+		 $scope.sheet.nonBillableHours = 0;
+		 $scope.sheet.remarks = "";
 		 $scope.editTimeSheetDate  = ""+$scope.pendingTimeSheets[index];
+		
+		 
+		 if ($scope.holidays && $scope.holidays.holidays){
+			 var nextWeek = $scope.nextWeek($scope.editTimeSheetDate);
+			 for (var i=0;i<$scope.holidays.holidays.length;i++){
+				 if ($scope.holidays.holidays[i].date >= $scope.editTimeSheetDate && $scope.holidays.holidays[i].date < nextWeek){
+					 //Holiday in this week
+					 $scope.sheet.billableHours -=8;
+					 $scope.sheet.nonBillableHours +=8;
+					 $scope.sheet.remarks += " "+ $scope.holidays.holidays[i].desc;
+				 }
+			 }
+		 }
 	 }
 	 
 	 
@@ -127,7 +141,12 @@ APP.CONTROLLERS.controller ('CTRL_HOME',['$scope','$state','$rootScope','$ionicL
 			 for (var i=$scope.missedTimeSheets.length-1;i >=0;i--){
 				 $scope.missedTimeSheetsSorted.push($scope.missedTimeSheets[i])
 			 }
-			 unFilledTimeStart = $scope.nextWeek(nextWeek);
+			 if (nextWeek){
+				 unFilledTimeStart = $scope.nextWeek(nextWeek);
+			 }else {
+				 unFilledTimeStart = $scope.nextWeek(currentWeekStart);
+			 }
+			 
 		 }else {
 			 unFilledTimeStart = currentWeekStart;
 		 }
@@ -151,6 +170,17 @@ APP.CONTROLLERS.controller ('CTRL_HOME',['$scope','$state','$rootScope','$ionicL
 		
 			 $scope.pendingTimeSheets = $scope.pendingTimeSheets.concat($scope.missedTimeSheetsSorted);
 		
+	 }
+	 $scope.getHolidays = function(){
+		 $http.get(appData.getHost()+'/ws/timesheet/holidays/'+window.localStorage.getItem('clientEmail')+'/india/')
+	  		.then(function(response){
+	  			if (response.data ){
+	  				$scope.holidays = response.data; 
+	  			}
+	  			
+	  		},
+			function(response){
+	  		}); 
 	 }
 	 $scope.getMyTimeSheets = function(){
 		 $scope.$emit('showBusy');

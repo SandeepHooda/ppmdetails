@@ -29,6 +29,7 @@ import com.product.Response.ResponseStatus;
 import com.timesheet.vo.AWeekTimeSheet;
 import com.timesheet.vo.AWeekTimeSheetComparator;
 import com.timesheet.vo.Defaulters;
+import com.timesheet.vo.Holidays;
 import com.timesheet.vo.TimeSheetEntry;
 import com.timesheet.vo.TimeSheetVO;
 
@@ -290,6 +291,16 @@ public class TimeSheetFacade {
 			
 			
 			return reportees;
+	    }
+	 public Holidays  getHolidays(String clientEmail , String location) {
+		 location = location.toLowerCase();
+		 String domain = clientEmail.substring(clientEmail.indexOf("@")+1).toLowerCase();
+	    	String holidaysJson = MangoDB.getDocumentWithQuery("ppm","holidays",location+"_"+ domain, null, true, MangoDB.mlabKeySonu, null) ;
+			Gson  json = new Gson();
+			Holidays holidays= json.fromJson(holidaysJson, new TypeToken<Holidays>() {}.getType());
+			
+			
+			return holidays;
 	    }
 
 }

@@ -97,7 +97,18 @@ public class TimeSheetEndpointImpl implements TimeSheetEndpoint {
 		}
 	}
 	
-	
-	
+	@Override
+	public Response getHolidays( String clientEmail , String location) {
+
+		try{
+			return Response.ok().entity(timeSheetFacade.getHolidays(clientEmail ,  location)).build();
+		}catch(Exception e){
+			e.printStackTrace();
+			LoginVO vo = new LoginVO();
+			vo.setErrorMessage("Internal Server Error ");
+			
+			return Response.serverError().entity(vo).build();
+		}
+	}
 
 }

@@ -53,7 +53,10 @@ public interface TimeSheetEndpoint {
 	public Response reworkTimeSheet( TimeSheetUpdateVo timeSheetUpdateVo);
 
 
-	
+	@GET
+	@Path("/holidays/{clientEmail}/{location}")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response getHolidays(@PathParam("clientEmail") String clientEmail , @PathParam("location") String location);
 	
 	
 
