@@ -15,6 +15,7 @@ public class LoginVO {
 	private boolean manager;
 	private boolean inactive;
 	private Set<String> reportees = new HashSet<String>();
+	private Set<String> obo = new HashSet<String>();
 
 	public String getErrorMessage() {
 		return errorMessage;
@@ -90,6 +91,14 @@ public class LoginVO {
 
 	public void setReportees(Set<String> reportees) {
 		this.reportees = reportees;
+	}
+
+	public Set<String> getObo() {
+		return obo;
+	}
+
+	public void setObo(Set<String> obo) {
+		this.obo = obo;
 	}
 
 	

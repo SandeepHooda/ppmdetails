@@ -45,6 +45,20 @@ public class TimeSheetEndpointImpl implements TimeSheetEndpoint {
 		}	
 	}
 	@Override
+	public Response reportee( String managerClientEmail) {
+		
+		try{
+			
+			return Response.ok().entity(timeSheetFacade.getReportees(managerClientEmail,false)).build();
+		}catch(Exception e){
+			e.printStackTrace();
+			LoginVO vo = new LoginVO();
+			vo.setErrorMessage("Internal Server Error ");
+			
+			return Response.serverError().entity(vo).build();
+		}
+	}
+	@Override
 	public Response getDefaulterListForManager(String managerClientEmail) {
 		try{
 			

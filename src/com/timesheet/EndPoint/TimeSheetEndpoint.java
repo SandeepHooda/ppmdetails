@@ -26,6 +26,10 @@ public interface TimeSheetEndpoint {
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getUsertimeSheets(@PathParam("clientEmail") String clientEmail);
 	@GET
+	@Path("/reportee/{managerClientEmail}")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response reportee(@PathParam("managerClientEmail") String managerClientEmail);
+	@GET
 	@Path("/defaulter/{clientEmail}")
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getDefaulterListForManager(@PathParam("clientEmail") String managerClientEmail);

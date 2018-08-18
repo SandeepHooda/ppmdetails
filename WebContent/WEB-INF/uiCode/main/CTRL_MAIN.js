@@ -28,7 +28,7 @@ APP.CONTROLLERS.controller ('CTRL_MAIN',['$scope','$state','$rootScope','$ionicL
 	 		  			window.localStorage.removeItem("userValidated");
 	  					$state.transitionTo('menu.login');
 	  				}else {
-	  					
+	  					$rootScope.login = $scope.login;
 	  					window.localStorage.setItem('manager',$scope.login.manager) ;
 	  					 $state.transitionTo('menu.tab.home');
 	  				}

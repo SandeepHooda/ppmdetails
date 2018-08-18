@@ -1,5 +1,5 @@
-APP.CONTROLLERS.controller ('CTRL_Reporting',['$scope','$state','$http','$ionicLoading','appData','$ionicPopup','ionicDatePicker',
-    function($scope,$state,$http,$ionicLoading,appData,$ionicPopup, ionicDatePicker){
+APP.CONTROLLERS.controller ('CTRL_Reporting',['$scope','$state','$http','$ionicLoading','appData','$ionicPopup','ionicDatePicker','$rootScope',
+    function($scope,$state,$http,$ionicLoading,appData,$ionicPopup, ionicDatePicker,$rootScope){
 	var theCtrl = this;
 	$scope.login = {};
 	$scope.host = appData.getHost();
@@ -11,15 +11,30 @@ APP.CONTROLLERS.controller ('CTRL_Reporting',['$scope','$state','$http','$ionicL
 	$scope.messageToTeam = "Please fill you advance timesheet and its details on the portal till this month end. "
 	$scope.messageSend = "";
 		
+	 $scope.selectedObo = {};
 	 
 	 var config = {
 	            headers : {
 	                'Content-Type': 'application/json;'
 	            }
 	        }
-	$scope.getDefaulterList = function(){
+	 if ($rootScope.login && $rootScope.login.obo && $rootScope.login.obo.length > 0){
+		 $scope.selectedObo.managerID = $rootScope.login.obo[0];
+		 if ($rootScope.login.obo.length > 1){
+			 $scope.oboList = $rootScope.login.obo;
+		 }
+	 }
+	$scope.updateManager = function(){
+		$scope.getDefaulterList();
+		 $scope.getReporteeList();
+	}
+	 $scope.getDefaulterList = function(){
 		 $scope.$emit('showBusy');
-		 $http.get(appData.getHost()+'/ws/timesheet/defaulter/'+window.localStorage.getItem('clientEmail'))
+		 var obo_manager = window.localStorage.getItem('clientEmail');
+			if ($scope.selectedObo.managerID){
+				obo_manager = $scope.selectedObo.managerID;
+			}
+		 $http.get(appData.getHost()+'/ws/timesheet/defaulter/'+obo_manager)
 	  		.then(function(response){
 	  			$scope.$emit('hideBusy');
 	  			if (response.data ){
@@ -33,10 +48,32 @@ APP.CONTROLLERS.controller ('CTRL_Reporting',['$scope','$state','$http','$ionicL
 	  			
 			});
 	 }
+	 $scope.getReporteeList = function(){
+		
+		 var managerClientEmail = window.localStorage.getItem('clientEmail');
+		
+			if ($scope.selectedObo.managerID){
+				managerClientEmail = $scope.selectedObo.managerID;
+			}
+		 $http.get(appData.getHost()+'/ws/timesheet/reportee/'+managerClientEmail)
+	  		.then(function(response){
+	  			
+	  			if (response.data ){
+	  				 $scope.reporteeList = response.data.defaulters; 
+	  			}
+	  			
+	  		},
+			function(response){
+	  		});
+	 }
 	 $scope.remmindDefaulters = function(){
 		 $scope.$emit('showBusy');
 		 var dto = {};
 		 dto.managerClientID = window.localStorage.getItem('clientEmail');
+		 
+			if ($scope.selectedObo.managerID){
+				dto.managerClientID = $scope.selectedObo.managerID;
+			}
 		 dto.defaulters = $scope.defaulters;
 		 $http.post(appData.getHost()+'/ws/timesheet/remindDefaulters', dto, config)
 	  		.then(function(response){
@@ -53,7 +90,11 @@ APP.CONTROLLERS.controller ('CTRL_Reporting',['$scope','$state','$http','$ionicL
 	$scope.sendMsgToTeam = function(){
 		 $scope.messageSend = "";
 		 $scope.$emit('showBusy');
-			$http.get(appData.getHost()+'/ws/timesheet/sendmessage/'+window.localStorage.getItem('clientEmail')+"/"+$scope.messageToTeam )
+		 var obo_manager = window.localStorage.getItem('clientEmail');
+			if ($scope.selectedObo.managerID){
+				obo_manager = $scope.selectedObo.managerID;
+			}
+			$http.get(appData.getHost()+'/ws/timesheet/sendmessage/'+obo_manager+"/"+$scope.messageToTeam )
 	  		.then(function(response){
 	  			$scope.$emit('hideBusy');
 	  			if (response.data ){
@@ -122,8 +163,11 @@ APP.CONTROLLERS.controller ('CTRL_Reporting',['$scope','$state','$http','$ionicL
 	};
 	  
 	$scope.download = function(){
-		
-		window.open(appData.getHost()+'/TimeSheetReport?id='+window.localStorage.getItem('clientEmail')+"&from="+$scope.fromDate +"&to="+$scope.toDate );
+		var obo_manager = window.localStorage.getItem('clientEmail');
+		if ($scope.selectedObo.managerID){
+			obo_manager = $scope.selectedObo.managerID;
+		}
+		window.open(appData.getHost()+'/TimeSheetReport?id='+obo_manager+"&from="+$scope.fromDate +"&to="+$scope.toDate );
 		
 		
 	}

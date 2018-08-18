@@ -54,7 +54,7 @@ public class LoginFacade {
 			}
 		}
 		
-		if (reportees.size() > 0) {
+		if (reportees.size() > 0 || loginVO.getObo().size() > 0) {
 			loginVO.setManager(true);
 		}else {
 			loginVO.setManager(false);
