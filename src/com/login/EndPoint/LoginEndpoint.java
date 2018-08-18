@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.login.vo.LoginVO;
+import com.login.vo.UpdateObo;
 
 
 @Path("")
@@ -34,6 +35,12 @@ public interface LoginEndpoint {
 	@Path("/login/isUserVerified/{otp}")
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response isUserVerified(@PathParam("otp") String otp);
+	
+	@POST
+	@Path("/login/updateOboRole")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces({ MediaType.APPLICATION_JSON })
+	public Response updateOboRole(UpdateObo updateObo);
 	
 
 }

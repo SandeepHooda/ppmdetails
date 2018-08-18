@@ -18,6 +18,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.login.vo.EmailOTP;
 import com.login.vo.LoginVO;
+import com.login.vo.UpdateObo;
+import com.myprofile.facade.MyProfileFacade;
 
 import mangodb.MangoDB;
 
@@ -33,6 +35,20 @@ public class LoginFacade {
 		
 		loginVO.setEmailOTP(sendVerificationEmail( loginVO));
 		isUserManager( loginVO);
+		return loginVO;
+	}
+	public LoginVO updateOboRole(UpdateObo updateObo) {
+		
+		LoginVO loginVO = new MyProfileFacade().getMyProfile(updateObo.getClientEmail());
+		if (updateObo.isHasMyOboRole()) {
+			loginVO.getObo().add(updateObo.getManagerClientEmail());
+		}else {
+			loginVO.getObo().remove(updateObo.getManagerClientEmail());
+		}
+		
+		Gson  json = new Gson();
+		String loginVOJson = json.toJson(loginVO, new TypeToken<LoginVO>() {}.getType());
+		MangoDB.updateData("ppm","registered-users",  loginVOJson, loginVO.getClientEmail(),MangoDB.mlabKeySonu);
 		return loginVO;
 	}
 	public void isUserManager(LoginVO loginVO) {

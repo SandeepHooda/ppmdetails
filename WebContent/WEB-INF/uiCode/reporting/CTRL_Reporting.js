@@ -59,7 +59,23 @@ APP.CONTROLLERS.controller ('CTRL_Reporting',['$scope','$state','$http','$ionicL
 	  		.then(function(response){
 	  			
 	  			if (response.data ){
-	  				 $scope.reporteeList = response.data.defaulters; 
+	  				 var reporteeList = response.data; 
+	  				 $scope.reporteeList = [];
+	  				 for (var index=0;index<reporteeList.length;index++){
+	  					 var reportee = reporteeList[index];
+	  					reportee.hasMyOboRole = false;
+	  					 if (reportee.obo && reportee.obo.length > 0){//check the obo list to find who all reportee is obo to
+	  						 for (var i=0;i<reportee.obo.length;i++){
+	  							 if (reportee.obo[i] == managerClientEmail ){// if reportee is obo to selected manager
+	  								reportee.hasMyOboRole = true;
+	  								break;
+	  							 }
+	  						 }
+	  					 }
+	  					 if (reportee._id != managerClientEmail){//don't push manager itself
+	  						$scope.reporteeList.push(reportee)
+	  					 }
+	  				 }
 	  			}
 	  			
 	  		},
@@ -170,6 +186,41 @@ APP.CONTROLLERS.controller ('CTRL_Reporting',['$scope','$state','$http','$ionicL
 		window.open(appData.getHost()+'/TimeSheetReport?id='+obo_manager+"&from="+$scope.fromDate +"&to="+$scope.toDate );
 		
 		
+	}
+	$scope.updateOboRole = function( reportee){
+		var countOfObos =0;;
+		for( var i=0;i< $scope.reporteeList.length;i++){
+			if ($scope.reporteeList[i].hasMyOboRole){
+				countOfObos++;
+			}
+		}
+		if (countOfObos <=0){
+			for( var i=0;i< $scope.reporteeList.length;i++){
+				if ($scope.reporteeList[i].clientEmail == reportee.clientEmail){
+					reportee.hasMyOboRole = true;
+					break;
+				}
+			}
+			alert("At lest one OBO is required");
+			return;
+		}
+		var obo_manager = window.localStorage.getItem('clientEmail');
+		if ($scope.selectedObo.managerID){
+			obo_manager = $scope.selectedObo.managerID;
+		}
+		var updateObo = {};
+		updateObo.hasMyOboRole = reportee.hasMyOboRole;
+		updateObo.clientEmail = reportee.clientEmail;
+		updateObo.managerClientEmail = obo_manager;
+		 $scope.$emit('showBusy');
+		$http.post(appData.getHost()+'/ws/login/updateOboRole', updateObo, config)
+  		.then(function(response){
+  			$scope.$emit('hideBusy');
+  		},
+		function(response){	
+  			$scope.$emit('hideBusy');
+  		}
+  		);
 	}
 }
 ])

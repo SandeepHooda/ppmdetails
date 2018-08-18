@@ -28,15 +28,17 @@
 	 
 	
  <hr/>
-	
 	  <b>Message to team</b>
 	  <br/>
 	 {{messageSend}}
 	 <input class="loginFields"  type="text" placeholder="Message to Team" ng-model="messageToTeam"  />
 	 <button ng-click="sendMsgToTeam()" id="teamMsgBtn" name="teamMsgBtn"  class="button button-balanced order-button fullBtn">Send Message to Team</button>
-	 
-	 <br/>
-	   <br/>
+<hr/>
+	<b>My team</b>
+	<div> <b>Has OBO role  - Client Email</b></div>
+	<div ng-repeat="reportee in reporteeList track by $index" >
+		  	<span><input type="checkbox" ng-model="reportee.hasMyOboRole" ng-change="updateOboRole(reportee)"> {{reportee.clientEmail}} </span>
+		  </div>
  </div>
  <div ng-show="!manager">
  You don't have access to the module
