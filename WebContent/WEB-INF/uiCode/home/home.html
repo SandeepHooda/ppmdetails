@@ -9,11 +9,7 @@
 		<ion-item class="smallPadding" ng-repeat="timeSheet in pendingTimeSheets track by $index" >
 			<button class="button button-calm order-button buttonSmall timeSheetBtn" ng-click="filltimeSheet(({{$index}}))">{{timeSheet}} </button>
 		</ion-item>
-		<br/>
-		<span ng-if="holidays && holidays.holidays"><b>Holidays</b></span>
-		<ion-item class="smallPadding" ng-repeat="holiday in holidays.holidays track by $index" >
-			<span >{{holiday.date}} - {{holiday.desc}}</span>
-		</ion-item>
+		
 	</div>
 	<div ng-show="!viewMode">
 	<b>{{editTimeSheetDate}}</b>
@@ -22,5 +18,11 @@
 		<input class="loginFields" type="text" placeholder="Remarks" ng-model="sheet.remarks" />
 		<button class="button button-calm order-button buttonSmall timeSheetBtn" ng-click="submit()">Submit</button>
 	</div>
+	
+	<br/>
+		<span ng-if="holidays && holidays.holidays"><b>Infosys Chd Holidays</b></span>
+		<ion-item class="smallPadding" ng-repeat="holiday in holidays.holidays track by $index" >
+			<span >{{holiday.date}} - {{holiday.desc}}</span>
+		</ion-item>
 </ion-content>
 </ion-view>

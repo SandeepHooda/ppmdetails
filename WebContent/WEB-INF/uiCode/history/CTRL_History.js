@@ -29,6 +29,9 @@ APP.CONTROLLERS.controller ('CTRL_History',['$scope','$state','$rootScope','$ion
 			});
 	 }
 		  
+	 $scope.backToHistoryView = function(){
+		 $scope.viewMode = true;
+	 }
 	 $scope.reworkTimeSheet = function(index){
 		 $scope.viewMode = false;
 		 $scope.reworkSheetTimeSheetEntry  = $scope.filledTimeSheets[index].timeSheetEntry;

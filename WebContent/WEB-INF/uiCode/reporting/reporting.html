@@ -8,17 +8,18 @@
  <span ng-if="selectedObo.managerID"><b>OBO {{selectedObo.managerID}}</b></span>
   <hr/>
  <div ng-show="manager">
- 	<br/>
-	  <br/>
-	  <b>Yet to submit time sheet</b>
+ 
+	  <div ng-if="defaulters && defaulters.length > 0">
+	  	<b>Yet to submit time sheet</b>
 		  <div ng-repeat="defaulter in defaulters track by $index" style="color:red">
 		  	<b>{{defaulter}}</b>
 		  </div>
 		   <button ng-click="remmindDefaulters()" id="defaultesReminder" name="defaultesReminder"  class="button button-balanced order-button fullBtn">Remind them</button>
-	  <br/>
-	 
-  <br/>
-   <br/>
+	  </div>
+	  <div ng-if="!defaulters || defaulters.length == 0">
+	  	<span style="color:green"><b>All team members have submitted their time sheets till date.</b></span>
+	 </div>
+
  <hr/>
  	<b>Please select the date and hit generate report</b>
 	 <input class="loginFields"  type="text" placeholder="From Date" ng-model="fromDate" ng-click="openFromDatePicker();"  />
@@ -27,8 +28,7 @@
 	 
 	
  <hr/>
-	  <br/>
-	  <br/>
+	
 	  <b>Message to team</b>
 	  <br/>
 	 {{messageSend}}
