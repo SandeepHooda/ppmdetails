@@ -15,6 +15,8 @@
 		<input class="loginFields"  type="text" placeholder="Billable" ng-model="reworkSheet.billableHours" />
 		<input class="loginFields"  type="text" placeholder="Non Billable" ng-model="reworkSheet.nonBillableHours" />
 		<input class="loginFields" type="text" placeholder="Remarks" ng-model="reworkSheet.remarks" />
+		<span><b>Last updated on:</b> {{reworkSheet.updateTime_Str}}</span>
+		
 		<button class="button button-calm order-button buttonSmall timeSheetBtn" ng-click="submitRework()">Submit</button>
 		<br/><br/>
 		<button class="button button-calm order-button buttonSmall timeSheetBtn" ng-click="backToHistoryView()">&lt;&lt; Back</button>
