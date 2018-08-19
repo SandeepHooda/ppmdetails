@@ -16,8 +16,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import org.apache.cxf.common.util.CollectionUtils;
-
 import com.communication.email.EmailAddess;
 import com.communication.email.EmailVO;
 import com.communication.email.MailService;
@@ -25,7 +23,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.login.vo.EmailOTP;
 import com.login.vo.LoginVO;
-import com.product.Response.ResponseStatus;
 import com.timesheet.vo.AWeekTimeSheet;
 import com.timesheet.vo.AWeekTimeSheetComparator;
 import com.timesheet.vo.Defaulters;
@@ -128,7 +125,11 @@ public class TimeSheetFacade {
 				Collections.sort(aUserAllTimeSheets, new AWeekTimeSheetComparator());
 				//for (AWeekTimeSheet aWeekTime : aUserAllTimeSheets) {
 					//if (aWeekTime.getWeekStartDate() >= recentMonday) {
-				int expectedTimeSheetEntries = getWeeksBetweenDates(aUserAllTimeSheets.get(0).getWeekStartDate(), recentMonday);
+				int endDate = recentMonday;
+				if (endDate< aUserAllTimeSheets.get(aUserAllTimeSheets.size()-1).getWeekStartDate()) {
+					endDate = aUserAllTimeSheets.get(aUserAllTimeSheets.size()-1).getWeekStartDate();
+				}
+				int expectedTimeSheetEntries = getWeeksBetweenDates(aUserAllTimeSheets.get(0).getWeekStartDate(), endDate);
 						if (expectedTimeSheetEntries == aUserAllTimeSheets.size())
 						defaulters.remove(aUserTimeSheets.get_id());
 						//break;
@@ -213,6 +214,7 @@ public class TimeSheetFacade {
 		
 	}
 	public TimeSheetVO submitTimeSheet(String  clientEmail,TimeSheetEntry currentEntry, int currentEntryDate) {
+		currentEntry.setUpdateTime(System.currentTimeMillis());
 		clientEmail =clientEmail.toLowerCase();
 		TimeSheetVO userAllTimeSheet = new TimeSheetVO();
 		Gson  json = new Gson();

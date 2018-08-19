@@ -1,6 +1,5 @@
 package com.timesheet.EndPoint;
 
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 import com.login.vo.LoginVO;

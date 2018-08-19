@@ -145,6 +145,20 @@ APP.CONTROLLERS.controller ('CTRL_HOME',['$scope','$state','$rootScope','$ionicL
 				 unFilledTimeStart = $scope.nextWeek(nextWeek);
 			 }else {
 				 unFilledTimeStart = $scope.nextWeek(currentWeekStart);
+				 while(true){//User might have submitted future time sheets as well so set the date after that
+					 var alreaySubmitted = false;
+					 for (var i=0;i<userTimeSheets.allTimeSheets.length;i++){
+						 if (userTimeSheets.allTimeSheets[i].weekStartDate == unFilledTimeStart){
+							 alreaySubmitted = true;
+							 unFilledTimeStart = $scope.nextWeek(unFilledTimeStart);//Now check for next week if that is submitted or not
+							 break;
+						 }
+					 }
+					 
+					 if (!alreaySubmitted){
+						 break;//We found teh date from which user has not submitted sheet
+					 }
+				 }
 			 }
 			 
 		 }else {

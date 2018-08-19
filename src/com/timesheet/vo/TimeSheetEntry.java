@@ -1,11 +1,21 @@
 package com.timesheet.vo;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 public class TimeSheetEntry {
 
 	private int billableHours;
 	private int nonBillableHours;
 	private String remarks;
 	private int editVersion;
+	private long updateTime;
+	private String updateTime_Str;
+	private static final SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy hh:mm:ss");
+	static {
+		sdf.setTimeZone(TimeZone.getTimeZone("IST"));
+	}
 	public int getBillableHours() {
 		return billableHours;
 	}
@@ -29,5 +39,15 @@ public class TimeSheetEntry {
 	}
 	public void setEditVersion(int editVersion) {
 		this.editVersion = editVersion;
+	}
+	public long getUpdateTime() {
+		return updateTime;
+	}
+	public void setUpdateTime(long updateTime) {
+		this.updateTime = updateTime;
+		this.updateTime_Str = sdf.format(new Date(updateTime))+" "+sdf.getTimeZone().getID();
+	}
+	public String getUpdateTime_Str() {
+		return updateTime_Str;
 	}
 }

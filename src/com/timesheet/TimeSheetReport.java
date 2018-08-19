@@ -86,7 +86,7 @@ public class TimeSheetReport extends HttpServlet {
 		
     }
     private String timeSheetToCsv(int from, int to, List<TimeSheetVO> reporteesTimeSheet ) {
-    	StringBuilder sb = new StringBuilder("date,id,billable,non Billable,remarks,version, edits\r\n");
+    	StringBuilder sb = new StringBuilder("date,id,billable,non Billable,remarks, Date,version no, Historical edits\r\n");
     	for (TimeSheetVO aReporteeTimeSheets : reporteesTimeSheet) {
     		String id = aReporteeTimeSheets.get_id();
     		for (AWeekTimeSheet aTimeSheet: aReporteeTimeSheets.getAllTimeSheets()) {
@@ -95,10 +95,20 @@ public class TimeSheetReport extends HttpServlet {
     				List<TimeSheetEntry> timeSheetEntry = aTimeSheet.getTimeSheetEntry();
     				Collections.sort(timeSheetEntry,new TimeSheetEntryComparator());
     				TimeSheetEntry entry = timeSheetEntry.get(0);
-    				sb.append(""+weekStartDate+","+id+","+entry.getBillableHours()+","+entry.getNonBillableHours()+","+entry.getRemarks()+","+entry.getEditVersion());
+    				if (null == entry.getRemarks()) {
+    					entry.setRemarks("");
+    				}else {
+    					entry.setRemarks(entry.getRemarks().replaceAll(",", "#"));
+    				}
+    				sb.append(""+weekStartDate+","+id+","+entry.getBillableHours()+","+entry.getNonBillableHours()+","+entry.getRemarks()+","+entry.getUpdateTime_Str()+","+entry.getEditVersion());
     				for (int i=1;i<timeSheetEntry.size();i++) {
     					entry = timeSheetEntry.get(i);
-    					sb.append(","+weekStartDate+","+id+","+entry.getBillableHours()+","+entry.getNonBillableHours()+","+entry.getRemarks()+","+entry.getEditVersion());
+    					if (null == entry.getRemarks()) {
+        					entry.setRemarks("");
+        				}else {
+        					entry.setRemarks(entry.getRemarks().replaceAll(",", "#"));
+        				}
+    					sb.append(","/*+weekStartDate+","+id+","*/+entry.getBillableHours()+","+entry.getNonBillableHours()+","+entry.getRemarks()+","+entry.getUpdateTime_Str()+","+entry.getEditVersion());
     					
     				}
     				sb.append("\r\n");
