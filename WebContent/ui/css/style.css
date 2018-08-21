@@ -5,6 +5,8 @@
 }
 .timeSheetBtn{
 	min-width: 100%;
+	padding-bottom: 10px !important;
+	padding-top: 10px !important;
 }
 .contactPhoneOtp{
 	min-width: 99%;

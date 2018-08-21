@@ -30,6 +30,9 @@ APP.CONTROLLERS.controller ('CTRL_HOME',['$scope','$state','$rootScope','$ionicL
 	 $scope.viewMode = true;
 	 $scope.sheet = {};
 	 $scope.editTimeSheetDate = "";
+	 $scope.backToView = function(){
+		 $scope.viewMode = true;
+	 }
 	 $scope.filltimeSheet = function(index){
 		 $scope.viewMode = false;
 		 $scope.sheet.billableHours = 40;

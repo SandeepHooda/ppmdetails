@@ -201,6 +201,10 @@ public class TimeSheetFacade {
 		emalVO.setHtmlContent(message+" <br/><br/>"
 				+ "https://ppmdetails.appspot.com/");
 		EmailAddess from = new EmailAddess();
+		if (fromAddress.indexOf("@") > 0) {
+			fromAddress = fromAddress.substring(0, fromAddress.indexOf("@"));
+			fromAddress = fromAddress.replace(".", " ").replaceAll("_", " ");
+		}
 		from.setLabel(fromAddress);
 		from.setAddress(emalVO.getUserName());
 		
