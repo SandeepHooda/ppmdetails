@@ -62,6 +62,10 @@ APP.CONTROLLERS.controller ('CTRL_HOME',['$scope','$state','$rootScope','$ionicL
 				 return;
 			 }
 		 }
+		 if ( parseInt($scope.sheet.billableHours) + parseInt($scope.sheet.nonBillableHours) <40){
+			 alert("Submitted hours are less that 40 hours");
+			 return;
+		 }
 		 
 			 //Ready to submit the timesheet
 			 $scope.$emit('showBusy');
@@ -97,17 +101,12 @@ APP.CONTROLLERS.controller ('CTRL_HOME',['$scope','$state','$rootScope','$ionicL
 			 if (day <10){
 				 day = "0"+day;
 			 }
-			 return ""+d.getFullYear() +month+day; 
+			 return ""+d.getFullYear() +""+month+""+day; 
 		 
 	 }
 	 $scope.pendingTimeSheets = [];
-	 $scope.createFutureTimeSheets = function(userTimeSheets){
-		 $scope.pendingTimeSheets = [];
-		 $scope.missedTimeSheets = [];//time sheet remaining in between two sheets
-		 $scope.missedTimeSheetsSorted = [];
-		 var unFilledTimeStart = 0;
-		 
-		 //Find Monday of the current week
+	 $scope.getCurrentMonday = function(){
+		//Find Monday of the current week
 		 var thisMonday = appData.getMondayOfThisWeek();
 		 var month = thisMonday.getMonth();
 		 var day = thisMonday.getDate();
@@ -118,8 +117,17 @@ APP.CONTROLLERS.controller ('CTRL_HOME',['$scope','$state','$rootScope','$ionicL
 		 if (day <10){
 			 day = "0"+day;
 		 }
-		 var currentWeekStart  = thisMonday.getFullYear() +month+day;
+		 var currentWeekStart  = thisMonday.getFullYear() +""+month+""+day;
+		 return currentWeekStart;
 		//End :: Find Monday of the current week
+	 }
+	 $scope.createFutureTimeSheets = function(userTimeSheets){
+		 $scope.pendingTimeSheets = [];
+		 $scope.missedTimeSheets = [];//time sheet remaining in between two sheets
+		 $scope.missedTimeSheetsSorted = [];
+		 var unFilledTimeStart = 0;
+		 
+		 var currentWeekStart  = $scope.getCurrentMonday();
 		 
 		 
 		 if (userTimeSheets.allTimeSheets && userTimeSheets.allTimeSheets.length > 0 ){//Find if any time sheet is missed since the first time sheet entry
@@ -141,26 +149,28 @@ APP.CONTROLLERS.controller ('CTRL_HOME',['$scope','$state','$rootScope','$ionicL
 				 timeSheetStart =  nextWeek;
 			 }
 			 
-			 for (var i=$scope.missedTimeSheets.length-1;i >=0;i--){
+			 /*for (var i=$scope.missedTimeSheets.length-1;i >=0;i--){
 				 $scope.missedTimeSheetsSorted.push($scope.missedTimeSheets[i])
-			 }
+			 }*/
 			 if (nextWeek){
 				 unFilledTimeStart = $scope.nextWeek(nextWeek);
 			 }else {
 				 unFilledTimeStart = $scope.nextWeek(currentWeekStart);
-				 while(true){//User might have submitted future time sheets as well so set the date after that
-					 var alreaySubmitted = false;
-					 for (var i=0;i<userTimeSheets.allTimeSheets.length;i++){
-						 if (userTimeSheets.allTimeSheets[i].weekStartDate == unFilledTimeStart){
-							 alreaySubmitted = true;
-							 unFilledTimeStart = $scope.nextWeek(unFilledTimeStart);//Now check for next week if that is submitted or not
-							 break;
-						 }
+				
+			 }
+			 
+			 while(true){//User might have submitted future time sheets as well so set the date after that
+				 var alreaySubmitted = false;
+				 for (var i=0;i<userTimeSheets.allTimeSheets.length;i++){
+					 if (userTimeSheets.allTimeSheets[i].weekStartDate == unFilledTimeStart){
+						 alreaySubmitted = true;
+						 unFilledTimeStart = $scope.nextWeek(unFilledTimeStart);//Now check for next week if that is submitted or not
+						 break;
 					 }
-					 
-					 if (!alreaySubmitted){
-						 break;//We found teh date from which user has not submitted sheet
-					 }
+				 }
+				 
+				 if (!alreaySubmitted){
+					 break;//We found teh date from which user has not submitted sheet
 				 }
 			 }
 			 
@@ -169,8 +179,8 @@ APP.CONTROLLERS.controller ('CTRL_HOME',['$scope','$state','$rootScope','$ionicL
 		 }
 		 
 		 
-		 var pendingSheets= appData.getCommingMondays(unFilledTimeStart,4);
-		 for (i=pendingSheets.length-1;i>=0;i--){
+		 var pendingSheets= appData.getCommingMondays(unFilledTimeStart,3);
+		 for (var i =0; i<pendingSheets.length;i++){
 			 var date = pendingSheets[i];
 			 var month = date.getMonth();
 			 month++;
@@ -181,18 +191,42 @@ APP.CONTROLLERS.controller ('CTRL_HOME',['$scope','$state','$rootScope','$ionicL
 			 if (day <10){
 				 day = "0"+day;
 			 }
-			 $scope.pendingTimeSheets.push(date.getFullYear()+month+day );
+			 $scope.pendingTimeSheets.push(date.getFullYear()+""+month+""+day );
 			// $scope.pendingTimeSheets.push(date)
 		 }
 		
-			 $scope.pendingTimeSheets = $scope.pendingTimeSheets.concat($scope.missedTimeSheetsSorted);
-		
+		 if ($scope.missedTimeSheets && $scope.missedTimeSheets.length > 0){
+			 $scope.pendingTimeSheets = $scope.missedTimeSheets.concat($scope.pendingTimeSheets);
+		 }
+		 $scope.pendingTimeSheetsButtons = [];
+		 var monthNames = [
+			    "Jan", "Feb", "Mar",
+			    "Apr", "May", "Jun", "Jul",
+			    "Aug", "Sep", "Oct",
+			    "Nov", "Dec"
+			  ];
+		for (var i=0; i<$scope.pendingTimeSheets.length;i++ ){
+			var btn = {};
+			btn.id = $scope.pendingTimeSheets[i];
+			var month = btn.id.substring(4,6);
+			month--;
+			btn.label =  btn.id.substring(6) + " "+monthNames[month] + " "+btn.id.substring(0,4);
+			$scope.pendingTimeSheetsButtons.push(btn);
+		}
 	 }
 	 $scope.getHolidays = function(){
 		 $http.get(appData.getHost()+'/ws/timesheet/holidays/'+window.localStorage.getItem('clientEmail')+'/india/')
 	  		.then(function(response){
 	  			if (response.data ){
 	  				$scope.holidays = response.data; 
+	  				var currentWeekStart  = $scope.getCurrentMonday();
+	  				for (var i=0;i<$scope.holidays.holidays.length;i++){
+	  					if ($scope.holidays.holidays[i].date < currentWeekStart){
+	  						$scope.holidays.holidays[i].upcomming = false;
+	  					}else {
+	  						$scope.holidays.holidays[i].upcomming = true;
+	  					}
+	  				}
 	  			}
 	  			
 	  		},

@@ -6,16 +6,19 @@
 
 <ion-content class="padding">
 	<div ng-show="viewMode">
-		<ion-item class="timeSheetBtn" ng-repeat="timeSheet in pendingTimeSheets track by $index" >
-			<button class="button button-calm order-button buttonSmall timeSheetBtn" ng-click="filltimeSheet(({{$index}}))">{{timeSheet}} </button>
+		<ion-item class="timeSheetBtn" ng-repeat="timeSheet in pendingTimeSheetsButtons track by $index" >
+			<button class="button button-calm order-button buttonSmall timeSheetBtn" ng-click="filltimeSheet(({{$index}}))">{{timeSheet.label}} </button>
 		
 		</ion-item>
 		
 	</div>
 	<div ng-show="!viewMode">
-	<b>{{editTimeSheetDate}}</b>
+	<b>Date : {{editTimeSheetDate}}</b> <br/>
+	<b>Billable hours</b><br/>
 		<input class="loginFields"  type="text" placeholder="Billable" ng-model="sheet.billableHours"  />
+		<b>Non Billable hours</b><br/>
 		<input class="loginFields"  type="text" placeholder="Non Billable" ng-model="sheet.nonBillableHours" />
+		<b>Remarks</b><br/>
 		<input class="loginFields" type="text" placeholder="Remarks" ng-model="sheet.remarks" />
 		<button class="button button-calm order-button buttonSmall timeSheetBtn" ng-click="submit()">Submit</button>
 		<br/><br/>
@@ -25,7 +28,8 @@
 	<br/>
 		<span ng-if="holidays && holidays.holidays"><b>Infosys Chd Holidays</b></span>
 		<ion-item class="smallPadding" ng-repeat="holiday in holidays.holidays track by $index" >
-			<span >{{holiday.date}} - {{holiday.desc}}</span>
+			<span ng-if="holiday.upcomming"> <b>{{holiday.date}} - {{holiday.desc}}</b></span>
+			<span ng-if="!holiday.upcomming">{{holiday.date}} - {{holiday.desc}}</span>
 		</ion-item>
 </ion-content>
 </ion-view>

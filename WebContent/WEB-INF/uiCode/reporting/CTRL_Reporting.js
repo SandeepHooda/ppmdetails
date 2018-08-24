@@ -177,13 +177,13 @@ APP.CONTROLLERS.controller ('CTRL_Reporting',['$scope','$state','$http','$ionicL
 	 $scope.openToDatePicker = function(){
 		 ionicDatePicker.openDatePicker(toDateObj);
 	};
-	  
+	$scope.report = {};
 	$scope.download = function(){
 		var obo_manager = window.localStorage.getItem('clientEmail');
 		if ($scope.selectedObo.managerID){
 			obo_manager = $scope.selectedObo.managerID;
 		}
-		window.open(appData.getHost()+'/TimeSheetReport?id='+obo_manager+"&from="+$scope.fromDate +"&to="+$scope.toDate );
+		window.open(appData.getHost()+'/TimeSheetReport?id='+obo_manager+"&from="+$scope.fromDate +"&to="+$scope.toDate +"&includeAuditData="+$scope.report.includeAuditData);
 		
 		
 	}

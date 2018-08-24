@@ -6,15 +6,18 @@
 
 <ion-content class="padding">
 	<div ng-show="viewMode">
-		<ion-item class="timeSheetBtn" ng-repeat="timeSheet in filledTimeSheets track by $index" >
-			<button class="button button-calm order-button buttonSmall timeSheetBtn" ng-click="reworkTimeSheet(({{$index}}))">{{timeSheet.weekStartDate}} </button>
+		<ion-item class="timeSheetBtn" ng-repeat="timeSheet in filledTimeSheetsBtns track by $index" >
+			<button class="button button-calm order-button buttonSmall timeSheetBtn" ng-click="reworkTimeSheet(({{$index}}))">{{timeSheet.label}} </button>
 			
 		</ion-item>
 	</div>
 	<div ng-show="!viewMode">
-		<b>{{weekStartDate}}</b>
+		<b>Date : {{weekStartDate}}</b><br/>
+		<b>Billable hours</b><br/>
 		<input class="loginFields"  type="text" placeholder="Billable" ng-model="reworkSheet.billableHours" />
+		<b>Non Billable hours</b><br/>
 		<input class="loginFields"  type="text" placeholder="Non Billable" ng-model="reworkSheet.nonBillableHours" />
+		<b>Remarks</b><br/>
 		<input class="loginFields" type="text" placeholder="Remarks" ng-model="reworkSheet.remarks" />
 		<span><b>Last updated on:</b> {{reworkSheet.updateTime_Str}}</span>
 		
